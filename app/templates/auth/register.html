@@ -4,43 +4,208 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
+    <div class="col-md-10 col-lg-8">
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white text-center py-3">
                 <h2 class="mb-0">Register</h2>
             </div>
             <div class="card-body p-4">
-                <form method="POST" action="{{ url_for('auth.register') }}">
+                <form method="POST" action="{{ url_for('auth.register') }}" id="registrationForm">
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email Address</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="confirm_password" class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="role" class="form-label">Register as</label>
-                        <select class="form-select" id="role" name="role" required>
+                        <label for="role" class="form-label">Register as <span class="text-danger">*</span></label>
+                        <select class="form-select" id="role" name="role" required onchange="showRoleFields()">
                             <option value="" selected disabled>Select your role</option>
                             <option value="migrant">Migrant Worker</option>
                             <option value="employer">Employer</option>
                             <option value="ngo">NGO</option>
+                  
                         </select>
-                        <div class="form-text">
-                            <ul class="mt-2">
-                                <li><strong>Migrant Worker:</strong> If you are a migrant worker seeking jobs or support</li>
-                                <li><strong>Employer:</strong> If you are an employer looking to hire migrant workers</li>
-                                <li><strong>NGO:</strong> If you are a NGO providing services to migrant workers</li>
-                            </ul>
+                    </div>
+                    
+                    <!-- Common Fields -->
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="mobile" class="form-label">Mobile Number <span class="text-danger">*</span></label>
+                        <input type="tel" class="form-control" id="mobile" name="mobile" required>
+                        <small class="form-text text-muted">Enter your 10-digit mobile number</small>
+                    </div>
+                    
+                    <div class="mb-3" id="emailField">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email">
+                        <small class="form-text text-muted">Optional for migrant workers</small>
+                    </div>
+                    
+                    <!-- Migrant Worker Specific Fields -->
+                    <div id="migrantFields" style="display: none;">
+                        <h4 class="mt-4 mb-3">Migrant Worker Details</h4>
+                        
+                        <div class="mb-3">
+                            <label for="dob" class="form-label">Date of Birth <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="dob" name="dob">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="aadhar" class="form-label">Aadhar Number <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="aadhar" name="aadhar" maxlength="12" pattern="[0-9]{12}">
+                            <small class="form-text text-muted">Enter your 12-digit Aadhar number</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="current_address" class="form-label">Current Address in Tamil Nadu <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="current_address" name="current_address" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="current_city" class="form-label">Current Workplace City <span class="text-danger">*</span></label>
+                            <select class="form-select" id="current_city" name="current_city">
+                                <option value="" selected disabled>Select your current city</option>
+                                <option value="Chennai">Chennai</option>
+                                <option value="Coimbatore">Coimbatore</option>
+                                <option value="Madurai">Madurai</option>
+                                <option value="Tiruchirappalli">Tiruchirappalli</option>
+                                <option value="Salem">Salem</option>
+                                <option value="Tirunelveli">Tirunelveli</option>
+                                <option value="Tiruppur">Tiruppur</option>
+                                <option value="Vellore">Vellore</option>
+                                <option value="Erode">Erode</option>
+                                <option value="Thoothukkudi">Thoothukkudi</option>
+                                <option value="Dindigul">Dindigul</option>
+                                <option value="Thanjavur">Thanjavur</option>
+                                <option value="Ranipet">Ranipet</option>
+                                <option value="Sivakasi">Sivakasi</option>
+                                <option value="Karur">Karur</option>
+                                <option value="Udhagamandalam">Udhagamandalam</option>
+                                <option value="Hosur">Hosur</option>
+                                <option value="Nagercoil">Nagercoil</option>
+                                <option value="Kanchipuram">Kanchipuram</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="native_state" class="form-label">Native State <span class="text-danger">*</span></label>
+                            <select class="form-select" id="native_state" name="native_state">
+                                <option value="" selected disabled>Select your native state</option>
+                                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                <option value="Assam">Assam</option>
+                                <option value="Bihar">Bihar</option>
+                                <option value="Chhattisgarh">Chhattisgarh</option>
+                                <option value="Goa">Goa</option>
+                                <option value="Gujarat">Gujarat</option>
+                                <option value="Haryana">Haryana</option>
+                                <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                <option value="Jharkhand">Jharkhand</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Kerala">Kerala</option>
+                                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Manipur">Manipur</option>
+                                <option value="Meghalaya">Meghalaya</option>
+                                <option value="Mizoram">Mizoram</option>
+                                <option value="Nagaland">Nagaland</option>
+                                <option value="Odisha">Odisha</option>
+                                <option value="Punjab">Punjab</option>
+                                <option value="Rajasthan">Rajasthan</option>
+                                <option value="Sikkim">Sikkim</option>
+                                <option value="Tamil Nadu">Tamil Nadu</option>
+                                <option value="Telangana">Telangana</option>
+                                <option value="Tripura">Tripura</option>
+                                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                <option value="Uttarakhand">Uttarakhand</option>
+                                <option value="West Bengal">West Bengal</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="native_address" class="form-label">Native Address <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="native_address" name="native_address" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="job_info_source" class="form-label">How did you come to know about the job opportunity in Tamil Nadu? <span class="text-danger">*</span></label>
+                            <select class="form-select" id="job_info_source" name="job_info_source" onchange="toggleContactFields()">
+                                <option value="" selected disabled>Select an option</option>
+                                <option value="friends">Friends</option>
+                                <option value="agency">Agency</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3 contact-fields" style="display: none;">
+                            <label for="contact_name" class="form-label">Contact Name (Friend/Agency) <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="contact_name" name="contact_name">
+                        </div>
+                        
+                        <div class="mb-3 contact-fields" style="display: none;">
+                            <label for="contact_number" class="form-label">Contact Number (Friend/Agency) <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" id="contact_number" name="contact_number">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="contractor_name" class="form-label">Contractor/Manager Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="contractor_name" name="contractor_name">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="contractor_number" class="form-label">Contractor/Manager Number <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" id="contractor_number" name="contractor_number">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="company_name" class="form-label">Company Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="company_name" name="company_name">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="company_type" class="form-label">Company Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="company_type" name="company_type">
+                                <option value="" selected disabled>Select company type</option>
+                                <option value="organized">Organized</option>
+                                <option value="unorganized">Unorganized</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="company_sector" class="form-label">Company Sector <span class="text-danger">*</span></label>
+                            <select class="form-select" id="company_sector" name="company_sector">
+                                <option value="" selected disabled>Select sector</option>
+                                <option value="Construction">Construction</option>
+                                <option value="Manufacturing">Manufacturing</option>
+                                <option value="Textile">Textile</option>
+                                <option value="Agriculture">Agriculture</option>
+                                <option value="Hospitality">Hospitality</option>
+                                <option value="Information Technology">Information Technology</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="Education">Education</option>
+                                <option value="Other">Other</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="d-grid">
+                    
+                    <!-- Other Role Fields (placeholder) -->
+                    <div id="otherRoleFields" style="display: none;">
+                        <div class="alert alert-info mt-3">
+                            <p>Please fill in the basic details above. Additional information will be collected after registration.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Hidden field for auto-generated password -->
+                    <input type="hidden" id="password" name="password" value="default123">
+
+                    
+                    <div class="alert alert-info mt-4">
+                        <p><i class="fas fa-info-circle"></i> Your registration will be reviewed by our background verification team. Once approved, your unique ID and a default password will be sent to your mobile number via SMS. You will need to change this default password after your first login.</p>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
                         <button type="submit" class="btn btn-primary">Register</button>
+                        <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">Cancel</a>
                     </div>
                 </form>
             </div>
@@ -50,4 +215,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/register.js') }}"></script>
 {% endblock %}

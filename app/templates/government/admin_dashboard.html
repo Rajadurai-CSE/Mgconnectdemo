@@ -178,6 +178,7 @@
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
     // State Chart
     var stateCtx = document.getElementById('stateChart').getContext('2d');
     var stateChart = new Chart(stateCtx, {
@@ -200,7 +201,7 @@
             }
         }
     });
-    
+
     // Sector Chart
     var sectorCtx = document.getElementById('sectorChart').getContext('2d');
     var sectorChart = new Chart(sectorCtx, {
@@ -240,7 +241,7 @@
             }
         }
     });
-    
+
     // Monthly Chart
     var monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
     var monthlyChart = new Chart(monthlyCtx, {
@@ -264,5 +265,6 @@
             }
         }
     });
+});
 </script>
 {% endblock %}

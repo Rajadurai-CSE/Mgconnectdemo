@@ -17,6 +17,21 @@
                     <div class="mt-4 mb-3">
                         <h5>Pending Verifications</h5>
                         <p>The following registrations need your verification:</p>
+                        
+                        <!-- City Filter -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <form method="GET" action="{{ url_for('government.bg_checker_dashboard') }}" class="d-flex">
+                                    <select name="city_filter" class="form-select me-2">
+                                        <option value="" {% if not city_filter %}selected{% endif %}>All Cities</option>
+                                        {% for city in available_cities %}
+                                            <option value="{{ city }}" {% if city_filter == city %}selected{% endif %}>{{ city }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="btn btn-primary">Filter</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                     
                     {% if pending_verifications %}
@@ -26,6 +41,7 @@
                                 <tr>
                                     <th>Name</th>
                                     <th>Aadhar Number</th>
+                                    <th>City</th>
                                     <th>Current Location</th>
                                     <th>Native State</th>
                                     <th>Company</th>
@@ -39,6 +55,7 @@
                                 <tr>
                                     <td>{{ migrant.personal_info.name }}</td>
                                     <td>{{ migrant.personal_info.aadhar[-4:] | default('xxxx', true) }}</td>
+                                    <td><span class="badge bg-info">{{ migrant.personal_info.current_city }}</span></td>
                                     <td>{{ migrant.personal_info.current_address }}</td>
                                     <td>{{ migrant.personal_info.native_state }}</td>
                                     <td>{{ migrant.personal_info.company }}</td>

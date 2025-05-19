@@ -13,48 +13,129 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
+    """
+    Register a new user with pending approval status
+    """
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
     
     if request.method == 'POST':
+        # Get form data
+        name = request.form.get('name')
+        mobile = request.form.get('mobile')
         email = request.form.get('email')
-        password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password')
         role = request.form.get('role')
+        password = request.form.get('password', 'default123')  # Default password
         
         # Validation
-        if User.is_email_taken(email):
-            flash('Email already registered', 'danger')
+        if not name or not mobile or not role:
+            flash('Please fill in all required fields', 'danger')
             return render_template('auth/register.html')
         
-        if password != confirm_password:
-            flash('Passwords do not match', 'danger')
+        # Check if mobile already registered
+        existing_user = Auth.get_user_by_mobile(mobile)
+        if existing_user:
+            flash('Mobile number already registered', 'danger')
             return render_template('auth/register.html')
         
-        # Create user
-        hashed_password = generate_password_hash(password)
-        user_data = {
-            'email': email,
-            'password': hashed_password,
-            'role': role,
-            'created_at': __import__('datetime').datetime.utcnow()
-        }
+        # For non-migrant roles, email is required
+        if role != 'migrant' and not email:
+            flash('Email is required for ' + role + ' registration', 'danger')
+            return render_template('auth/register.html')
         
-        user_id = mongo.db.users.insert_one(user_data).inserted_id
+        # Create user profile based on role
+        user_profile = {}
         
-        # Create role-specific profile
         if role == 'migrant':
-            flash('Account created successfully! Please complete your profile', 'success')
-            login_user(User(user_data))
-            return redirect(url_for('migrants.setup_profile'))
+            # Get migrant-specific fields
+            dob = request.form.get('dob')
+            aadhar = request.form.get('aadhar')
+            current_address = request.form.get('current_address')
+            current_city = request.form.get('current_city')
+            native_state = request.form.get('native_state')
+            native_address = request.form.get('native_address')
+            job_info_source = request.form.get('job_info_source')
+            contact_name = request.form.get('contact_name')
+            contact_number = request.form.get('contact_number')
+            contractor_name = request.form.get('contractor_name')
+            contractor_number = request.form.get('contractor_number')
+            company_name = request.form.get('company_name')
+            company_type = request.form.get('company_type')
+            company_sector = request.form.get('company_sector')
+            
+            # Create migrant profile
+            user_profile = {
+                'name': name,
+                'dob': dob,
+                'aadhar': aadhar,
+                'current_address': current_address,
+                'current_city': current_city,
+                'native_state': native_state,
+                'native_address': native_address,
+                'job_info_source': job_info_source,
+                'contact_name': contact_name if job_info_source in ['friends', 'agency'] else None,
+                'contact_number': contact_number if job_info_source in ['friends', 'agency'] else None,
+                'contractor_name': contractor_name,
+                'contractor_number': contractor_number,
+                'company_name': company_name,
+                'company_type': company_type,
+                'company_sector': company_sector,
+                'registration_date': datetime.utcnow(),
+                'status': 'pending'
+            }
+            
+            # Insert migrant profile
+            user_id = mongo.db.migrants.insert_one(user_profile).inserted_id
+            
         elif role == 'employer':
-            flash('Account created successfully! Please complete your company profile', 'success')
-            login_user(User(user_data))
-            return redirect(url_for('employers.setup_profile'))
-        else:
-            flash('Account created successfully!', 'success')
-            login_user(User(user_data))
-            return redirect(url_for('main.index'))
+            # Create basic employer profile
+            user_profile = {
+                'name': name,
+                'company_name': name,  # Use name as company name initially
+                'registration_date': datetime.utcnow(),
+                'status': 'pending'
+            }
+            
+            # Insert employer profile
+            user_id = mongo.db.employers.insert_one(user_profile).inserted_id
+            
+        elif role == 'ngo':
+            # Create basic NGO profile
+            user_profile = {
+                'name': name,
+                'organization_name': name,  # Use name as organization name initially
+                'registration_date': datetime.utcnow(),
+                'status': 'pending'
+            }
+            
+            # Insert NGO profile
+            user_id = mongo.db.ngos.insert_one(user_profile).inserted_id
+            
+        elif role == 'bg_checker':
+            # Create basic background checker profile
+            user_profile = {
+                'name': name,
+                'department': 'Verification Department',  # Default department
+                'registration_date': datetime.utcnow(),
+                'status': 'pending'
+            }
+            
+            # Insert background checker profile
+            user_id = mongo.db.bg_checkers.insert_one(user_profile).inserted_id
+        
+        # Create credentials with pending approval status
+        Auth.create_credentials(
+            user_id=user_id,
+            password=password,
+            user_type=role,
+            mobile=mobile,
+            email=email,
+            unique_id=None,  # Will be assigned after approval
+            approval_status='pending'
+        )
+        
+        flash('Your registration has been submitted successfully! You will receive your unique ID and password via SMS after approval.', 'success')
+        return redirect(url_for('auth.login'))
     
     return render_template('auth/register.html')
 
@@ -89,10 +170,17 @@ def login():
             'email': user_data.get('email'),
             'role': user_data['user_type'],
             'user_data': user_profile,
-            'unique_id': user_data.get('unique_id')  # Pass the unique_id from credentials
+            'unique_id': user_data.get('unique_id'),  # Pass the unique_id from credentials
+            'credential_id': str(user_data['_id'])  # Store credential ID for password changes
         }
         user = User(user_obj)
         login_user(user, remember=remember)
+        
+        # Check if user is using default password (default123)
+        if check_password_hash(user_data['password_hash'], 'default123'):
+            # Redirect to change password page
+            flash('You are using a default password. Please change it for security reasons.', 'warning')
+            return redirect(url_for('auth.change_default_password'))
         
         # Redirect based on role
         if user.role == 'migrant':
@@ -182,37 +270,88 @@ def reset_password():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
     
-    # Check if verified mobile and OTP exist in session
-    if 'verified_mobile' not in session or 'verified_otp' not in session:
-        flash('Please verify your mobile number first.', 'danger')
-        return redirect(url_for('auth.forgot_password'))
+    token = request.args.get('token', '')
     
-    mobile = session['verified_mobile']
-    otp = session['verified_otp']
+    if not token:
+        flash('Invalid or expired password reset link.', 'danger')
+        return redirect(url_for('auth.login'))
+    
+    # Verify token
+    user_data = Auth.verify_reset_token(token)
+    if not user_data:
+        flash('Invalid or expired password reset link.', 'danger')
+        return redirect(url_for('auth.login'))
     
     if request.method == 'POST':
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        
+        if not password or not confirm_password:
+            flash('Please fill in all fields.', 'danger')
+            return render_template('auth/reset_password.html', token=token)
+        
+        if password != confirm_password:
+            flash('Passwords do not match.', 'danger')
+            return render_template('auth/reset_password.html', token=token)
+        
+        # Update password
+        if Auth.update_password(user_data['_id'], password):
+            flash('Your password has been updated. You can now login with your new password.', 'success')
+            return redirect(url_for('auth.login'))
+        else:
+            flash('An error occurred. Please try again.', 'danger')
+            return render_template('auth/reset_password.html', token=token)
+    
+    return render_template('auth/reset_password.html', token=token)
+
+@auth.route('/change-default-password', methods=['GET', 'POST'])
+@login_required
+def change_default_password():
+    """
+    Change default password after first login
+    """
+    if request.method == 'POST':
+        current_password = request.form.get('current_password')
         new_password = request.form.get('new_password')
         confirm_password = request.form.get('confirm_password')
         
-        if not new_password or not confirm_password:
-            flash('Please enter both password fields.', 'danger')
-            return render_template('auth/reset_password.html')
+        if not current_password or not new_password or not confirm_password:
+            flash('Please fill in all fields.', 'danger')
+            return render_template('auth/change_default_password.html')
         
         if new_password != confirm_password:
-            flash('Passwords do not match.', 'danger')
-            return render_template('auth/reset_password.html')
+            flash('New passwords do not match.', 'danger')
+            return render_template('auth/change_default_password.html')
         
-        # Reset password
-        if Auth.reset_password(mobile, otp, new_password):
-            # Clear session variables
-            session.pop('reset_mobile', None)
-            session.pop('verified_mobile', None)
-            session.pop('verified_otp', None)
+        if len(new_password) < 8:
+            flash('Password must be at least 8 characters long.', 'danger')
+            return render_template('auth/change_default_password.html')
+        
+        # Check if current password is correct
+        credential_id = current_user.credential_id
+        if not Auth.check_password(credential_id, current_password):
+            flash('Current password is incorrect.', 'danger')
+            return render_template('auth/change_default_password.html')
+        
+        # Update password
+        if Auth.update_password(credential_id, new_password):
+            flash('Your password has been updated successfully.', 'success')
             
-            flash('Your password has been reset successfully. Please login with your new password.', 'success')
-            return redirect(url_for('auth.login'))
+            # Redirect based on role
+            if current_user.role == 'migrant':
+                return redirect(url_for('migrants.dashboard'))
+            elif current_user.role == 'admin':
+                return redirect(url_for('government.admin_dashboard'))
+            elif current_user.role == 'bg_checker':
+                return redirect(url_for('government.bg_checker_dashboard'))
+            elif current_user.role == 'employer':
+                return redirect(url_for('employers.dashboard'))
+            elif current_user.role == 'ngo':
+                return redirect(url_for('ngos.ngo_dashboard'))
+            else:
+                return redirect(url_for('main.index'))
         else:
-            flash('Failed to reset password. Please try again.', 'danger')
-            return render_template('auth/reset_password.html')
+            flash('An error occurred. Please try again.', 'danger')
+            return render_template('auth/change_default_password.html')
     
-    return render_template('auth/reset_password.html')
+    return render_template('auth/change_default_password.html')

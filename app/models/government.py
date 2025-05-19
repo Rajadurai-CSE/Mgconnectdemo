@@ -44,11 +44,48 @@ class Government:
         return list(mongo.db.bg_checkers.find())
     
     @staticmethod
-    def get_pending_verifications(area=None):
+    def get_pending_verifications(area=None, city=None):
+        """
+        Get pending verifications with optional area and city filtering
+        
+        Args:
+            area: Area assigned to the background checker
+            city: City to filter by (optional)
+            
+        Returns:
+            List of pending migrant verifications matching the criteria
+        """
         query = {"status": "pending"}
-        if area:
+        
+        # Filter by area if specified
+        if area and area != 'All Areas':
             query["personal_info.current_address"] = {"$regex": area, "$options": "i"}
+        
+        # Filter by city if specified
+        if city:
+            query["personal_info.current_city"] = city
+            
         return list(mongo.db.migrants.find(query))
+    
+    @staticmethod
+    def get_available_cities():
+        """
+        Get a list of all cities where migrants are registered
+        
+        Returns:
+            List of unique city names
+        """
+        # Use aggregation to get distinct cities
+        pipeline = [
+            {"$match": {"status": "pending"}},  # Only pending registrations
+            {"$group": {"_id": "$personal_info.current_city"}},  # Group by city
+            {"$match": {"_id": {"$ne": None}}},  # Exclude null values
+            {"$sort": {"_id": 1}}  # Sort alphabetically
+        ]
+        
+        result = mongo.db.migrants.aggregate(pipeline)
+        cities = [doc["_id"] for doc in result if doc["_id"]]
+        return cities
     
     @staticmethod
     def process_verification(migrant_id, status, notes=None, verified_by=None):

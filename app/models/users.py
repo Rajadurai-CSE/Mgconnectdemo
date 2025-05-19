@@ -29,7 +29,8 @@ def load_user(user_id):
             'email': user_data.get('email'),
             'role': user_data['user_type'],
             'user_data': user_profile,
-            'unique_id': user_data.get('unique_id')  # Pass the unique_id
+            'unique_id': user_data.get('unique_id'),  # Pass the unique_id
+            'credential_id': str(user_data['_id'])  # Store credential ID for password changes
         }
         return User(user_obj)
     return None
@@ -44,6 +45,9 @@ class User(UserMixin):
         
         # Store unique_id from credentials if available
         self.unique_id = user_data.get('unique_id')
+        
+        # Store credential_id for password changes
+        self.credential_id = user_data.get('credential_id')
         
     def get_id(self):
         # Return unique_id if available (for all user types)

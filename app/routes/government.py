@@ -139,17 +139,15 @@ def add_helpline():
 @government.route('/bg-checker/dashboard')
 @login_required
 def bg_checker_dashboard():
+    """
+    Background checker dashboard with city-based filtering
+    """
     if current_user.role != 'bg_checker':
         flash('Access denied. You must be a background checker to view this page.', 'danger')
         return redirect(url_for('main.index'))
     
-    # Debug information
-    print(f"Current user ID: {current_user.get_id()}")
-    print(f"Current user role: {current_user.role}")
-    
     # Get the user's unique_id from the current_user object
     unique_id = current_user.get_id()
-    print(f"Looking up background checker with unique_id: {unique_id}")
     
     # Find the background checker by their unique_id
     bg_checker = mongo.db.bg_checkers.find_one({'unique_id': unique_id})
@@ -160,13 +158,21 @@ def bg_checker_dashboard():
         
     area_assigned = bg_checker.get('area_assigned', 'All Areas')
     
-    # Get pending verifications for this area
-    pending_verifications = Government.get_pending_verifications(area_assigned)
+    # Get city filter from request if provided
+    city_filter = request.args.get('city_filter', '')
+    
+    # Get pending verifications for this area, filtered by city if specified
+    pending_verifications = Government.get_pending_verifications(area_assigned, city_filter)
+    
+    # Get all available cities for the filter dropdown
+    available_cities = Government.get_available_cities()
     
     return render_template('government/bg_checker_dashboard.html', 
                            pending_verifications=pending_verifications,
                            area_assigned=area_assigned,
-                           bg_checker=bg_checker)
+                           bg_checker=bg_checker,
+                           city_filter=city_filter,
+                           available_cities=available_cities)
 
 @government.route('/bg-checker/verify/<migrant_id>', methods=['GET', 'POST'])
 @login_required
