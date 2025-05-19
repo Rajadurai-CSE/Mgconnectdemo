@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Background Checker | MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Add Background Checker</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('government.add_bg_checker') }}">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Background checkers are responsible for verifying migrant registrations and ensuring the accuracy of the information provided.
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                            <div class="form-text">This will be their login username</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                            <div class="form-text">Minimum 8 characters</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="area_assigned" class="form-label">Area Assigned <span class="text-danger">*</span></label>
+                            <select class="form-select" id="area_assigned" name="area_assigned" required>
+                                <option value="" selected disabled>Select area</option>
+                                <option value="Chennai">Chennai</option>
+                                <option value="Coimbatore">Coimbatore</option>
+                                <option value="Madurai">Madurai</option>
+                                <option value="Trichy">Trichy</option>
+                                <option value="Salem">Salem</option>
+                                <option value="Tirunelveli">Tirunelveli</option>
+                                <option value="Vellore">Vellore</option>
+                                <option value="Thoothukudi">Thoothukudi</option>
+                                <option value="Dindigul">Dindigul</option>
+                                <option value="Thanjavur">Thanjavur</option>
+                                <option value="Erode">Erode</option>
+                                <option value="Tirupur">Tirupur</option>
+                            </select>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('government.manage_bg_checkers') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Create Background Checker</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

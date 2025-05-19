@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Job Details - MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('migrants.dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Job Details</li>
+        </ol>
+    </nav>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="mb-0">{{ job.title }}</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4 class="mb-3">Job Details</h4>
+                    <div class="mb-3">
+                        {% if job.skills_required and job.skills_required|length > 0 %}
+                            <span class="badge bg-primary">{{ job.skills_required[0] }}</span>
+                        {% endif %}
+                        <span class="badge bg-secondary">{{ job.location }}</span>
+                        <span class="badge bg-info">{{ job.job_type }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <h6>Description</h6>
+                        <p>{{ job.description }}</p>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6>Salary Range</h6>
+                            <p>{{ job.salary_range }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Job Type</h6>
+                            <p>{{ job.job_type }}</p>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6>Skills Required</h6>
+                            <p>
+                                {% if job.skills_required %}
+                                    {% for skill in job.skills_required %}
+                                        <span class="badge bg-light text-dark me-1">{{ skill }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-muted">None specified</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Experience Required</h6>
+                            <p>{{ job.experience_required or 'None specified' }}</p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <h6>Education Required</h6>
+                        <p>{{ job.education_required or 'None specified' }}</p>
+                    </div>
+                    {% if job.duration %}
+                        <div class="mb-3">
+                            <h6>Duration</h6>
+                            <p>{{ job.duration }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Company Information</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if employer and employer.company_info %}
+                                <h6>{{ employer.company_info.company_name }}</h6>
+                                <p class="mb-2">
+                                    <i class="fas fa-map-marker-alt me-2 text-primary"></i> {{ job.location }}
+                                </p>
+                                <p class="mb-2">
+                                    <i class="fas fa-industry me-2 text-primary"></i> {{ employer.company_info.industry }}
+                                </p>
+                                {% if employer.company_info.description %}
+                                <p class="mb-2">
+                                    <i class="fas fa-info-circle me-2 text-primary"></i> {{ employer.company_info.description|truncate(100) }}
+                                </p>
+                                {% endif %}
+                            {% else %}
+                                <h6>Company information not available</h6>
+                                <p class="mb-2">
+                                    <i class="fas fa-map-marker-alt me-2 text-primary"></i> {{ job.location }}
+                                </p>
+                            {% endif %}
+                            <hr>
+                            <p class="mb-0">
+                                <strong>Posted on:</strong> {{ job.created_at.strftime('%d %b %Y') }}
+                            </p>
+                        </div>
+                    </div>
+
+                    {% if job.status == 'active' %}
+                        <div class="alert alert-info">
+                            <p class="mb-0">To get this job, please contact the employer directly or through a current worker.</p>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <p class="mb-0">This job posting is no longer active.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Current Workers Section -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="mb-0">Current Workers</h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted mb-3">These are migrants currently working in this job. You can contact them to learn more about the job and workplace conditions.</p>
+            <div class="row">
+                {% for migrant in working_migrants %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                {% if migrant.documents and migrant.documents.photo %}
+                                    <img src="{{ migrant.documents.photo }}" alt="{{ migrant.personal_info.name }}" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;">
+                                {% else %}
+                                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                                        <i class="fas fa-user fa-2x text-secondary"></i>
+                                    </div>
+                                {% endif %}
+                                <h5 class="card-title">{{ migrant.personal_info.name }}</h5>
+                                <p class="card-text">From: {{ migrant.personal_info.home_state }}</p>
+                                <p class="card-text">
+                                    <small class="text-muted">Working since: {{ migrant.jobs[-1].start_date.strftime('%b %Y') }}</small>
+                                </p>
+                                {% if current_user.role == 'migrant' and current_user.status == 'approved' %}
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#contactModal{{ migrant._id }}">
+                                        <i class="fas fa-envelope me-1"></i> Contact
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Modal -->
+                    <div class="modal fade" id="contactModal{{ migrant._id }}" tabindex="-1" aria-labelledby="contactModalLabel{{ migrant._id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="contactModalLabel{{ migrant._id }}">Contact {{ migrant.personal_info.name }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>To protect privacy, we don't share contact information directly. You can send a message to {{ migrant.personal_info.name }} through our platform:</p>
+                                    <form>
+                                        <div class="mb-3">
+                                            <label for="messageSubject{{ migrant._id }}" class="form-label">Subject</label>
+                                            <input type="text" class="form-control" id="messageSubject{{ migrant._id }}" placeholder="e.g. Question about job at {{ job.details.company_name }}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="messageContent{{ migrant._id }}" class="form-label">Message</label>
+                                            <textarea class="form-control" id="messageContent{{ migrant._id }}" rows="4" placeholder="Enter your message here..."></textarea>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary">Send Message</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <span>No workers are currently associated with this job posting.</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

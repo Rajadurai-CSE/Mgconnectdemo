@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}My Support Requests - MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>My Support Requests</h1>
+        <a href="{{ url_for('migrants.create_support_request') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i> New Request
+        </a>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8 mb-3 mb-md-0">
+                    <div class="input-group">
+                        <input type="text" id="requestSearchInput" class="form-control" placeholder="Search requests...">
+                        <button class="btn btn-outline-primary" type="button" id="requestSearchButton">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select class="form-select" id="requestStatusFilter">
+                        <option value="all" selected>All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="resolved">Resolved</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Subject</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Last Updated</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="requestsTableBody">
+                {% for request in support_requests %}
+                <tr class="request-row" data-status="{{ request.status }}">
+                    <td>{{ request.request_id }}</td>
+                    <td>{{ request.subject }}</td>
+                    <td>
+                        <span class="badge 
+                            {% if request.category == 'Housing' %}bg-success
+                            {% elif request.category == 'Employment' %}bg-primary
+                            {% elif request.category == 'Wages' %}bg-danger
+                            {% elif request.category == 'Documentation' %}bg-info
+                            {% elif request.category == 'Healthcare' %}bg-warning
+                            {% elif request.category == 'Safety' %}bg-danger
+                            {% elif request.category == 'Legal' %}bg-secondary
+                            {% elif request.category == 'Education' %}bg-info
+                            {% else %}bg-dark
+                            {% endif %}">
+                            {{ request.category }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge 
+                            {% if request.status == 'pending' %}bg-warning
+                            {% elif request.status == 'in_progress' %}bg-info
+                            {% elif request.status == 'resolved' %}bg-success
+                            {% else %}bg-secondary
+                            {% endif %}">
+                            {{ request.status|replace('_', ' ')|title }}
+                        </span>
+                    </td>
+                    <td>{{ request.created_at.strftime('%d %b %Y') }}</td>
+                    <td>{{ request.updated_at.strftime('%d %b %Y') }}</td>
+                    <td>
+                        <a href="{{ url_for('migrants.view_support_request', request_id=request._id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="text-center py-4">
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <span>You haven't submitted any support requests yet.</span>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if support_requests|length > 0 and total_pages > 1 %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+                <a class="page-link" href="{% if current_page > 1 %}{{ url_for('migrants.support_requests', page=current_page-1) }}{% else %}#{% endif %}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            
+            {% for i in range(1, total_pages + 1) %}
+            <li class="page-item {% if current_page == i %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('migrants.support_requests', page=i) }}">{{ i }}</a>
+            </li>
+            {% endfor %}
+            
+            <li class="page-item {% if current_page == total_pages %}disabled{% endif %}">
+                <a class="page-link" href="{% if current_page < total_pages %}{{ url_for('migrants.support_requests', page=current_page+1) }}{% else %}#{% endif %}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+{% block scripts %}
+<script>
+    // Support request search functionality
+    document.getElementById('requestSearchButton').addEventListener('click', function() {
+        filterRequests();
+    });
+    
+    // Support request status filter
+    document.getElementById('requestStatusFilter').addEventListener('change', function() {
+        filterRequests();
+    });
+    
+    // Filter support requests
+    function filterRequests() {
+        const searchTerm = document.getElementById('requestSearchInput').value.toLowerCase();
+        const selectedStatus = document.getElementById('requestStatusFilter').value;
+        
+        const requestRows = document.querySelectorAll('.request-row');
+        
+        requestRows.forEach(row => {
+            const subject = row.cells[1].textContent.toLowerCase();
+            const category = row.cells[2].textContent.toLowerCase();
+            const status = row.dataset.status;
+            
+            const matchesSearch = subject.includes(searchTerm) || category.includes(searchTerm);
+            const matchesStatus = selectedStatus === 'all' || status === selectedStatus;
+            
+            if (matchesSearch && matchesStatus) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Job Opportunities - MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Profile Status Alert -->
+    {% if not profile %}
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Your profile is incomplete. <a href="{{ url_for('migrants.setup_profile') }}">Complete your profile</a> to access all features.
+        </div>
+    {% elif profile.status == 'pending' %}
+        <div class="alert alert-info">
+            <i class="fas fa-clock me-2"></i>
+            Your profile is currently under review. You will be notified once it's approved.
+        </div>
+    {% elif profile.status == 'rejected' %}
+        <div class="alert alert-danger">
+            <i class="fas fa-times-circle me-2"></i>
+            Your profile has been rejected. Reason: {{ profile.rejection_reason }}
+            <a href="{{ url_for('migrants.setup_profile') }}" class="btn btn-sm btn-outline-danger ms-3">Update Profile</a>
+        </div>
+    {% endif %}
+
+    <!-- Page Header with Back Link -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Job Opportunities</h1>
+        <a href="{{ url_for('migrants.dashboard') }}" class="btn btn-sm btn-outline-primary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('main.filter_jobs') }}" class="row g-3">
+                <div class="col-md-4">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" class="form-control" id="location" name="location" placeholder="Enter city/district">
+                </div>
+                <div class="col-md-4">
+                    <label for="job_type" class="form-label">Job Type</label>
+                    <select class="form-select" id="job_type" name="job_type">
+                        <option value="">All Types</option>
+                        <option value="full-time">Full Time</option>
+                        <option value="part-time">Part Time</option>
+                        <option value="contract">Contract</option>
+                        <option value="seasonal">Seasonal</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="skills" class="form-label">Skills</label>
+                    <input type="text" class="form-control" id="skills" name="skills" placeholder="Enter skills">
+                </div>
+                <div class="col-12 text-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-1"></i> Search
+                    </button>
+                    <a href="{{ url_for('migrants.jobs') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-redo me-1"></i> Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Job Listings -->
+    <div class="row">
+        {% for job in jobs %}
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-primary text-white py-3">
+                        <h5 class="card-title mb-0">{{ job.title }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            {% set employer = get_employer_info_template(job.employer_id) %}
+                            <p class="card-text mb-2">
+                                <i class="fas fa-building me-2 text-primary"></i>
+                                <strong>Company:</strong> {{ employer.company_info.company_name if employer and employer.company_info else 'Company information not available' }}
+                            </p>
+                            <p class="card-text mb-2">
+                                <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                <strong>Location:</strong> {{ job.location }}
+                            </p>
+                            <p class="card-text mb-2">
+                                <i class="fas fa-rupee-sign me-2 text-primary"></i>
+                                <strong>Salary:</strong> {{ job.salary_range }}
+                            </p>
+                            <p class="card-text mb-2">
+                                <i class="fas fa-clock me-2 text-primary"></i>
+                                <strong>Type:</strong> {{ job.job_type|capitalize }}
+                            </p>
+                            <p class="card-text mb-2">
+                                <i class="fas fa-briefcase me-2 text-primary"></i>
+                                <strong>Experience:</strong> {{ job.experience_required or 'Not specified' }}
+                            </p>
+                        </div>
+                        <div class="card-text">
+                            <p class="text-truncate-3">{{ job.description[:150] }}{% if job.description|length > 150 %}...{% endif %}</p>
+                        </div>
+                        {% if job.skills_required and job.skills_required|length > 0 %}
+                            <div class="mt-3">
+                                <strong>Skills:</strong>
+                                {% for skill in job.skills_required %}
+                                    <span class="badge bg-light text-dark me-1">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Posted: {{ job.created_at.strftime('%d %b %Y') }}</small>
+                            <a href="{{ url_for('migrants.view_job', job_id=job.job_id) }}" class="btn btn-primary">
+                                <i class="fas fa-eye me-1"></i> View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info text-center py-5">
+                    <i class="fas fa-info-circle fa-3x mb-3"></i>
+                    <h5>No job opportunities available at the moment</h5>
+                    <p>Please check back later or modify your search criteria.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Tips for Job Seekers -->
+    <div class="card shadow-sm mt-4">
+        <div class="card-header bg-success text-white py-3">
+            <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Tips for Job Seekers</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6><i class="fas fa-file-alt text-success me-2"></i>Prepare Your Documents</h6>
+                    <ul class="small">
+                        <li>Keep your ID proof, address proof, and skill certificates ready</li>
+                        <li>Carry multiple copies of your documents</li>
+                        <li>If possible, get them translated to the local language</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6><i class="fas fa-handshake text-success me-2"></i>During the Interview</h6>
+                    <ul class="small">
+                        <li>Ask about payment terms and working hours</li>
+                        <li>Verify the accommodation conditions</li>
+                        <li>Get a written agreement if possible</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .text-truncate-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+{% endblock %}

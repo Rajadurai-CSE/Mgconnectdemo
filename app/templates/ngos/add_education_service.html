@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Education Service | MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Add Education Service</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('ngos.add_education_service') }}">
+                        <div class="alert alert-info">
+                            <p><i class="fas fa-info-circle"></i> Education services help migrant workers' children access quality education.</p>
+                        </div>
+                        
+                        <h5 class="mb-3">Service Information</h5>
+                        <div class="mb-3">
+                            <label for="service_name" class="form-label">Service Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="service_name" name="service_name" required>
+                            <div class="form-text">E.g., School Enrollment Assistance, Education Counseling, etc.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                            <div class="form-text">Provide a detailed description of the education services offered.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="type_of_service" class="form-label">Type of Service <span class="text-danger">*</span></label>
+                            <select class="form-select" id="type_of_service" name="type_of_service" required>
+                                <option value="" selected disabled>Select Type</option>
+                                <option value="School Enrollment">School Enrollment</option>
+                                <option value="After-School Program">After-School Program</option>
+                                <option value="Education Counseling">Education Counseling</option>
+                                <option value="Language Classes">Language Classes</option>
+                                <option value="Vocational Training">Vocational Training</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="age_group" class="form-label">Age Group <span class="text-danger">*</span></label>
+                            <select class="form-select" id="age_group" name="age_group" required>
+                                <option value="" selected disabled>Select Age Group</option>
+                                <option value="3-5 years">3-5 years (Pre-school)</option>
+                                <option value="6-10 years">6-10 years (Primary School)</option>
+                                <option value="11-15 years">11-15 years (Middle School)</option>
+                                <option value="16-18 years">16-18 years (High School)</option>
+                                <option value="18+ years">18+ years (Adult Education)</option>
+                                <option value="All ages">All ages</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="eligibility" class="form-label">Eligibility Criteria <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="eligibility" name="eligibility" rows="2" required></textarea>
+                            <div class="form-text">Specify who can apply for this education service.</div>
+                        </div>
+                        
+                        <h5 class="mb-3 mt-4">Required Documents</h5>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="id_proof" id="id_proof" name="documents_required">
+                                <label class="form-check-label" for="id_proof">ID Proof of Parent/Guardian</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="child_birth_certificate" id="child_birth_certificate" name="documents_required">
+                                <label class="form-check-label" for="child_birth_certificate">Child's Birth Certificate</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="previous_school_records" id="previous_school_records" name="documents_required">
+                                <label class="form-check-label" for="previous_school_records">Previous School Records (if applicable)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="address_proof" id="address_proof" name="documents_required">
+                                <label class="form-check-label" for="address_proof">Address Proof</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="other_documents" id="other_documents" name="documents_required">
+                                <label class="form-check-label" for="other_documents">Other Documents</label>
+                            </div>
+                        </div>
+                        
+                        <h5 class="mb-3 mt-4">Location & Contact Information</h5>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Service Location <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="address" name="address" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="contact_person" class="form-label">Contact Person <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="contact_person" name="contact_person" required>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="contact_number" class="form-label">Contact Number <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="contact_number" name="contact_number" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contact_email" class="form-label">Contact Email</label>
+                                <input type="email" class="form-control" id="contact_email" name="contact_email">
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('ngos.ngo_dashboard') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Education Service</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

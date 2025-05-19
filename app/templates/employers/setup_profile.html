@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Setup Company Profile - MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white py-3">
+                    <h2 class="mb-0">Complete Company Profile</h2>
+                    <p class="mb-0">Please provide your company details to complete registration</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('employers.setup_profile') }}">
+                        <h4 class="mb-3">Company Information</h4>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="company_name" class="form-label">Company Name</label>
+                                <input type="text" class="form-control" id="company_name" name="company_name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="industry" class="form-label">Industry/Sector</label>
+                                <select class="form-select" id="industry" name="industry" required>
+                                    <option value="" selected disabled>Select industry</option>
+                                    <option value="Agriculture">Agriculture</option>
+                                    <option value="Construction">Construction</option>
+                                    <option value="Manufacturing">Manufacturing</option>
+                                    <option value="Textile">Textile</option>
+                                    <option value="Hospitality">Hospitality</option>
+                                    <option value="Information Technology">Information Technology</option>
+                                    <option value="Healthcare">Healthcare</option>
+                                    <option value="Retail">Retail</option>
+                                    <option value="Transportation">Transportation</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Company Address</label>
+                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="city" name="city" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="state" class="form-label">State</label>
+                                <select class="form-select" id="state" name="state" required>
+                                    <option value="Tamil Nadu" selected>Tamil Nadu</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="contact_person" class="form-label">Contact Person Name</label>
+                                <input type="text" class="form-control" id="contact_person" name="contact_person" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contact_phone" class="form-label">Contact Phone Number</label>
+                                <input type="tel" class="form-control" id="contact_phone" name="contact_phone" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="company_size" class="form-label">Company Size</label>
+                                <select class="form-select" id="company_size" name="company_size" required>
+                                    <option value="" selected disabled>Select company size</option>
+                                    <option value="1-10 employees">1-10 employees</option>
+                                    <option value="11-50 employees">11-50 employees</option>
+                                    <option value="51-200 employees">51-200 employees</option>
+                                    <option value="201-500 employees">201-500 employees</option>
+                                    <option value="501-1000 employees">501-1000 employees</option>
+                                    <option value="1000+ employees">1000+ employees</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="registration_number" class="form-label">Business Registration Number</label>
+                                <input type="text" class="form-control" id="registration_number" name="registration_number" required>
+                                <div class="form-text">GST/PAN/Company Registration Number</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Company Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <small>
+                                <i class="fas fa-info-circle me-2"></i>
+                                By registering as an employer, you agree to provide accurate information about migrant workers employed by your company. This helps in better tracking and support of the migrant workforce.
+                            </small>
+                        </div>
+                        
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Create Company Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

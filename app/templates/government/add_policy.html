@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Policy | MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Add Policy or Announcement</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('government.add_policy') }}">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Policies and announcements published here will be visible to all migrant workers on the platform.
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="description" name="description" rows="5" required></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="sector" class="form-label">Sector (Optional)</label>
+                            <select class="form-select" id="sector" name="sector">
+                                <option value="" selected>All Sectors</option>
+                                <option value="Agriculture">Agriculture</option>
+                                <option value="Construction">Construction</option>
+                                <option value="Manufacturing">Manufacturing</option>
+                                <option value="Textile">Textile</option>
+                                <option value="Hospitality">Hospitality</option>
+                                <option value="Information Technology">Information Technology</option>
+                                <option value="Retail">Retail</option>
+                                <option value="Transportation">Transportation</option>
+                            </select>
+                            <div class="form-text">If the policy applies to a specific sector, select it here. Otherwise, leave as "All Sectors".</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="document_url" class="form-label">Document URL (Optional)</label>
+                            <input type="url" class="form-control" id="document_url" name="document_url">
+                            <div class="form-text">If there's a document associated with this policy, provide the URL here.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="published_date" class="form-label">Published Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="published_date" name="published_date" required>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('government.manage_policies') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Publish Policy</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

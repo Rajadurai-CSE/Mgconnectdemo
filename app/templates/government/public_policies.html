@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}Policies & Announcements | MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Filter by Sector</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="{{ url_for('government.public_policies') }}" class="list-group-item list-group-item-action {% if not request.args.get('sector') %}active{% endif %}">
+                            All Sectors
+                        </a>
+                        <a href="{{ url_for('government.public_policies', sector='Agriculture') }}" class="list-group-item list-group-item-action {% if request.args.get('sector') == 'Agriculture' %}active{% endif %}">
+                            Agriculture
+                        </a>
+                        <a href="{{ url_for('government.public_policies', sector='Construction') }}" class="list-group-item list-group-item-action {% if request.args.get('sector') == 'Construction' %}active{% endif %}">
+                            Construction
+                        </a>
+                        <a href="{{ url_for('government.public_policies', sector='Manufacturing') }}" class="list-group-item list-group-item-action {% if request.args.get('sector') == 'Manufacturing' %}active{% endif %}">
+                            Manufacturing
+                        </a>
+                        <a href="{{ url_for('government.public_policies', sector='Textile') }}" class="list-group-item list-group-item-action {% if request.args.get('sector') == 'Textile' %}active{% endif %}">
+                            Textile
+                        </a>
+                        <a href="{{ url_for('government.public_policies', sector='Hospitality') }}" class="list-group-item list-group-item-action {% if request.args.get('sector') == 'Hospitality' %}active{% endif %}">
+                            Hospitality
+                        </a>
+                        <a href="{{ url_for('government.public_policies', sector='Information Technology') }}" class="list-group-item list-group-item-action {% if request.args.get('sector') == 'Information Technology' %}active{% endif %}">
+                            Information Technology
+                        </a>
+                        <a href="{{ url_for('government.public_policies', sector='Retail') }}" class="list-group-item list-group-item-action {% if request.args.get('sector') == 'Retail' %}active{% endif %}">
+                            Retail
+                        </a>
+                        <a href="{{ url_for('government.public_policies', sector='Transportation') }}" class="list-group-item list-group-item-action {% if request.args.get('sector') == 'Transportation' %}active{% endif %}">
+                            Transportation
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Policies & Announcements</h4>
+                </div>
+                <div class="card-body">
+                    {% if policies %}
+                        <div class="translate-button-container text-end mb-3">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-outline-primary translate-btn" data-lang="en">English</button>
+                                <button type="button" class="btn btn-outline-primary translate-btn" data-lang="ta">தமிழ்</button>
+                                <button type="button" class="btn btn-outline-primary translate-btn" data-lang="hi">हिंदी</button>
+                                <button type="button" class="btn btn-outline-primary translate-btn" data-lang="te">తెలుగు</button>
+                                <button type="button" class="btn btn-outline-primary translate-btn" data-lang="ml">മലയാളം</button>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            {% for policy in policies %}
+                            <div class="col-md-12 mb-4">
+                                <div class="card h-100 policy-card" data-content="policy-{{ loop.index }}">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0 policy-title">{{ policy.title }}</h5>
+                                        <span class="badge bg-primary">{{ policy.sector or 'All Sectors' }}</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="policy-description">{{ policy.description }}</p>
+                                        
+                                        {% if policy.document_url %}
+                                        <div class="mt-3">
+                                            <a href="{{ policy.document_url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-file-pdf"></i> View Document
+                                            </a>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-footer text-muted">
+                                        Published: {{ policy.published_date.strftime('%Y-%m-%d') }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <p>No policies or announcements found for this sector. Please check back later or select a different sector.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/google-translate-api@3.0.0/dist/index.min.js"></script>
+<script>
+    // Simple translation function using Google Translate API
+    document.addEventListener('DOMContentLoaded', function() {
+        const translateButtons = document.querySelectorAll('.translate-btn');
+        
+        translateButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const targetLang = this.getAttribute('data-lang');
+                translatePage(targetLang);
+                
+                // Set active class
+                translateButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        function translatePage(targetLang) {
+            // If it's English, reset to original content
+            if (targetLang === 'en') {
+                location.reload();
+                return;
+            }
+            
+            // Otherwise use Google Translate
+            const policyTitles = document.querySelectorAll('.policy-title');
+            const policyDescriptions = document.querySelectorAll('.policy-description');
+            
+            // Create Google Translate element
+            const googleTranslateElement = document.createElement('div');
+            googleTranslateElement.id = 'google_translate_element';
+            googleTranslateElement.style.display = 'none';
+            document.body.appendChild(googleTranslateElement);
+            
+            // Initialize Google Translate
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: targetLang,
+                autoDisplay: false
+            }, 'google_translate_element');
+            
+            // Trigger translation
+            const translateCombo = document.querySelector('.goog-te-combo');
+            if (translateCombo) {
+                translateCombo.value = targetLang;
+                translateCombo.dispatchEvent(new Event('change'));
+            }
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

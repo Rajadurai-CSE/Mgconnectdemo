@@ -1,0 +1,394 @@
+{% extends "base.html" %}
+
+{% block title %}Support Request Details - MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('migrants.dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('migrants.support_requests') }}">Support Requests</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Request #{{ request.request_id }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Request Details -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white py-3">
+                    <h2 class="h5 mb-0">Request #{{ request.request_id }}</h2>
+                    <span class="badge 
+                        {% if request.status == 'pending' %}bg-warning
+                        {% elif request.status == 'in_progress' %}bg-info
+                        {% elif request.status == 'resolved' %}bg-success
+                        {% else %}bg-secondary
+                        {% endif %}">
+                        {{ request.status|replace('_', ' ')|title }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <h3 class="h4 mb-3">{{ request.subject }}</h3>
+                    
+                    <div class="d-flex mb-3">
+                        <span class="badge 
+                            {% if request.category == 'Housing' %}bg-success
+                            {% elif request.category == 'Employment' %}bg-primary
+                            {% elif request.category == 'Wages' %}bg-danger
+                            {% elif request.category == 'Documentation' %}bg-info
+                            {% elif request.category == 'Healthcare' %}bg-warning
+                            {% elif request.category == 'Safety' %}bg-danger
+                            {% elif request.category == 'Legal' %}bg-secondary
+                            {% elif request.category == 'Education' %}bg-info
+                            {% else %}bg-dark
+                            {% endif %} me-2">
+                            {{ request.category }}
+                        </span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 class="h6">Description</h4>
+                        <p>{{ request.description }}</p>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h4 class="h6">Created On</h4>
+                                <p>{{ request.created_at.strftime('%d %b %Y, %H:%M') }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h4 class="h6">Last Updated</h4>
+                                <p>{{ request.updated_at.strftime('%d %b %Y, %H:%M') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h4 class="h6">Assigned Department</h4>
+                        <p>{{ request.assigned_department if request.assigned_department else 'Not yet assigned' }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h4 class="h6">Status History</h4>
+                        <div class="status-timeline">
+                            {% for status_update in request.status_history %}
+                                <div class="status-item">
+                                    <div class="status-badge 
+                                        {% if status_update.status == 'pending' %}bg-warning
+                                        {% elif status_update.status == 'in_progress' %}bg-info
+                                        {% elif status_update.status == 'resolved' %}bg-success
+                                        {% else %}bg-secondary
+                                        {% endif %}">
+                                    </div>
+                                    <div class="status-content">
+                                        <div class="status-title">{{ status_update.status|replace('_', ' ')|title }}</div>
+                                        <div class="status-date">{{ status_update.timestamp.strftime('%d %b %Y, %H:%M') }}</div>
+                                        {% if status_update.notes %}
+                                            <div class="status-notes">{{ status_update.notes }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Messages -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white py-3">
+                    <h3 class="h5 mb-0">Communication</h3>
+                </div>
+                <div class="card-body">
+                    <div class="messages-container">
+                        {% if request.messages %}
+                            {% for message in request.messages %}
+                                <div class="message-item {% if message.sender_type == 'migrant' %}message-self{% else %}message-other{% endif %}">
+                                    <div class="message-header">
+                                        <strong>{{ message.sender_name }}</strong> 
+                                        <span class="text-muted">{{ message.timestamp.strftime('%d %b %Y, %H:%M') }}</span>
+                                    </div>
+                                    <div class="message-body">
+                                        {{ message.content }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <span>No messages yet. If you have any updates or questions, you can send a message below.</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if request.status != 'closed' %}
+                        <form method="POST" action="{{ url_for('migrants.add_message', request_id=request._id) }}" class="mt-4">
+                            <div class="mb-3">
+                                <label for="messageContent" class="form-label">Add a message</label>
+                                <textarea class="form-control" id="messageContent" name="content" rows="3" required></textarea>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Send Message</button>
+                            </div>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-warning mt-4">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span>This request is closed. You cannot add new messages.</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Request Status Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light py-3">
+                    <h3 class="h5 mb-0">Request Status</h3>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-center mb-3">
+                        <div class="progress-circle 
+                            {% if request.status == 'pending' %}progress-25
+                            {% elif request.status == 'in_progress' %}progress-50
+                            {% elif request.status == 'resolved' %}progress-75
+                            {% elif request.status == 'closed' %}progress-100
+                            {% endif %}">
+                            <div class="progress-circle-inner">
+                                <div class="progress-text">
+                                    {{ request.status|replace('_', ' ')|title }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-steps">
+                        <div class="progress-step {% if request.status != 'pending' %}completed{% endif %}">
+                            <div class="step-circle">1</div>
+                            <div class="step-text">Submitted</div>
+                        </div>
+                        <div class="progress-step {% if request.status == 'in_progress' or request.status == 'resolved' or request.status == 'closed' %}completed{% endif %}">
+                            <div class="step-circle">2</div>
+                            <div class="step-text">In Progress</div>
+                        </div>
+                        <div class="progress-step {% if request.status == 'resolved' or request.status == 'closed' %}completed{% endif %}">
+                            <div class="step-circle">3</div>
+                            <div class="step-text">Resolved</div>
+                        </div>
+                        <div class="progress-step {% if request.status == 'closed' %}completed{% endif %}">
+                            <div class="step-circle">4</div>
+                            <div class="step-text">Closed</div>
+                        </div>
+                    </div>
+                    
+                    {% if request.estimated_resolution_time %}
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-clock me-2"></i>
+                        <span>Estimated time to resolution: {{ request.estimated_resolution_time }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if request.status == 'resolved' %}
+                    <div class="d-grid gap-2 mt-3">
+                        <form method="POST" action="{{ url_for('migrants.close_request', request_id=request._id) }}">
+                            <button type="submit" class="btn btn-success w-100">Mark as Closed</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Similar Requests Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light py-3">
+                    <h3 class="h5 mb-0">Similar Requests</h3>
+                </div>
+                <div class="card-body">
+                    {% if similar_requests %}
+                        <div class="list-group">
+                            {% for similar in similar_requests %}
+                                <a href="{{ url_for('migrants.view_support_request', request_id=similar._id) }}" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ similar.subject }}</h6>
+                                        <small class="text-muted">{{ similar.created_at.strftime('%d %b') }}</small>
+                                    </div>
+                                    <p class="mb-1">Category: {{ similar.category }}</p>
+                                    <small class="text-muted">Status: {{ similar.status|replace('_', ' ')|title }}</small>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <span>No similar requests found.</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Status Timeline Styles */
+    .status-timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    
+    .status-timeline:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 9px;
+        width: 2px;
+        background: #dee2e6;
+    }
+    
+    .status-item {
+        position: relative;
+        margin-bottom: 20px;
+    }
+    
+    .status-badge {
+        position: absolute;
+        left: -30px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: #6c757d;
+    }
+    
+    .status-content {
+        padding-bottom: 10px;
+    }
+    
+    .status-title {
+        font-weight: bold;
+    }
+    
+    .status-date {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 5px;
+    }
+    
+    .status-notes {
+        font-size: 0.9rem;
+        padding: 5px 0;
+    }
+    
+    /* Message Styles */
+    .messages-container {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    .message-item {
+        margin-bottom: 15px;
+        padding: 10px 15px;
+        border-radius: 5px;
+        background-color: #f8f9fa;
+    }
+    
+    .message-self {
+        background-color: #e3f2fd;
+        margin-left: 20px;
+    }
+    
+    .message-other {
+        background-color: #f8f9fa;
+        margin-right: 20px;
+    }
+    
+    .message-header {
+        margin-bottom: 5px;
+        font-size: 0.9rem;
+    }
+    
+    /* Progress Circle Styles */
+    .progress-circle {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: #e9ecef;
+        position: relative;
+    }
+    
+    .progress-circle-inner {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .progress-text {
+        font-weight: bold;
+        color: #212529;
+        text-align: center;
+    }
+    
+    .progress-25 {
+        background: conic-gradient(#ffc107 0% 25%, #e9ecef 25% 100%);
+    }
+    
+    .progress-50 {
+        background: conic-gradient(#17a2b8 0% 50%, #e9ecef 50% 100%);
+    }
+    
+    .progress-75 {
+        background: conic-gradient(#28a745 0% 75%, #e9ecef 75% 100%);
+    }
+    
+    .progress-100 {
+        background: conic-gradient(#6c757d 0% 100%);
+    }
+    
+    /* Progress Steps */
+    .progress-steps {
+        display: flex;
+        flex-direction: column;
+        margin-top: 20px;
+    }
+    
+    .progress-step {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    
+    .step-circle {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: bold;
+        margin-right: 10px;
+        color: #6c757d;
+    }
+    
+    .progress-step.completed .step-circle {
+        background-color: #28a745;
+        color: #fff;
+    }
+    
+    .step-text {
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}

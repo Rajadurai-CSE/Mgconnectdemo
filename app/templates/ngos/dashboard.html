@@ -1,0 +1,251 @@
+{% extends 'base_custom.html' %}
+
+{% block title %}NGO Dashboard | MigrantConnect TN{% endblock %}
+
+{% block section_header %}
+<div class="ngo-header py-4" style="background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%); color: white;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold"><i class="fas fa-hands-helping me-2"></i>NGO Portal</h1>
+                <p class="lead mb-0">Manage your services, connect with migrant workers, and facilitate support</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="btn-group">
+                    <a href="{{ url_for('ngos.ngo_dashboard') }}" class="btn btn-light">
+                        <i class="fas fa-handshake me-1"></i> Services
+                    </a>
+                    <a href="#" class="btn btn-light" disabled>
+                        <i class="fas fa-plus-circle me-1"></i> Add Service
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">NGO Dashboard</h4>
+                </div>
+                <div class="card-body">
+                    <h5>Welcome, {{ ngo.name }}</h5>
+                    <p>Serving area: {{ ngo.area_served }}</p>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5>NGO Status</h5>
+                                    {% if ngo.status == 'active' %}
+                                    <span class="badge bg-success">Active</span>
+                                    <p class="mt-2">NGO ID: {{ ngo.unique_id }}</p>
+                                    {% elif ngo.status == 'pending' %}
+                                    <span class="badge bg-warning text-dark">Pending Approval</span>
+                                    <p class="mt-2">Your NGO registration is pending approval from administrators.</p>
+                                    {% else %}
+                                    <span class="badge bg-danger">Inactive</span>
+                                    <p class="mt-2">Please contact the administrator for assistance.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5>Contact Information</h5>
+                                    <p><strong>Email:</strong> {{ ngo.email }}</p>
+                                    <p><strong>Phone:</strong> {{ ngo.phone }}</p>
+                                    <p><strong>Services Offered:</strong> {{ ngo.services|join(', ') }}</p>
+                                    <p><strong>Area Served:</strong> {{ ngo.area_served }}</p>
+                                    <p><strong>Email:</strong> {{ ngo.email }}</p>
+                                    <p><strong>Phone:</strong> {{ ngo.phone }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {% if ngo.status == 'active' %}
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Housing Services</h4>
+                    <a href="{{ url_for('ngos.add_housing_service') }}" class="btn btn-sm btn-light">Add New</a>
+                </div>
+                <div class="card-body">
+                    {% if housing_services %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Capacity</th>
+                                    <th>Location</th>
+                                    <th>Date Added</th>
+                                    <th>Views</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for service in housing_services %}
+                                <tr>
+                                    <td>{{ service.details.name }}</td>
+                                    <td>{{ service.details.capacity }}</td>
+                                    <td>{{ service.details.address }}</td>
+                                    <td>{{ service.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ service.views|default(0) }}</td>
+                                    <td>
+                                        <a href="{{ url_for('ngos.service_stats', service_type='housing', service_id=service.id) }}" class="btn btn-sm btn-primary">View Stats</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <p>You haven't added any housing services yet. <a href="{{ url_for('ngos.add_housing_service') }}">Add your first housing service</a>.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Legal Aid Services</h4>
+                    <a href="{{ url_for('ngos.add_legal_service') }}" class="btn btn-sm btn-light">Add New</a>
+                </div>
+                <div class="card-body">
+                    {% if legal_services %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Service Name</th>
+                                    <th>Type</th>
+                                    <th>Cost</th>
+                                    <th>Date Added</th>
+                                    <th>Views</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for service in legal_services %}
+                                <tr>
+                                    <td>{{ service.details.service_name }}</td>
+                                    <td>{{ service.details.type_of_service }}</td>
+                                    <td>{{ service.details.cost }}</td>
+                                    <td>{{ service.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ service.views|default(0) }}</td>
+                                    <td>
+                                        <a href="{{ url_for('ngos.service_stats', service_type='legal', service_id=service.id) }}" class="btn btn-sm btn-primary">View Stats</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <p>You haven't added any legal aid services yet. <a href="{{ url_for('ngos.add_legal_service') }}">Add your first legal aid service</a>.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Education Services</h4>
+                    <a href="{{ url_for('ngos.add_education_service') }}" class="btn btn-sm btn-light">Add New</a>
+                </div>
+                <div class="card-body">
+                    {% if education_services %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Service Name</th>
+                                    <th>Type</th>
+                                    <th>Age Group</th>
+                                    <th>Date Added</th>
+                                    <th>Views</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for service in education_services %}
+                                <tr>
+                                    <td>{{ service.details.service_name }}</td>
+                                    <td>{{ service.details.type_of_service }}</td>
+                                    <td>{{ service.details.age_group }}</td>
+                                    <td>{{ service.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ service.views|default(0) }}</td>
+                                    <td>
+                                        <a href="{{ url_for('ngos.service_stats', service_type='education', service_id=service.id) }}" class="btn btn-sm btn-primary">View Stats</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <p>You haven't added any education services yet. <a href="{{ url_for('ngos.add_education_service') }}">Add your first education service</a>.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Healthcare Services</h4>
+                    <a href="#" class="btn btn-sm btn-light">Add New</a>
+                </div>
+                <div class="card-body">
+                    {% if healthcare_services %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Location</th>
+                                    <th>Date Added</th>
+                                    <th>Views</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for service in healthcare_services %}
+                                <tr>
+                                    <td>{{ service.details.name }}</td>
+                                    <td>{{ service.details.type }}</td>
+                                    <td>{{ service.details.location }}</td>
+                                    <td>{{ service.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ service.views|default(0) }}</td>
+                                    <td>
+                                        <a href="{{ url_for('ngos.service_stats', service_type='healthcare', service_id=service._id) }}" class="btn btn-sm btn-primary">View Stats</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <p>You haven't added any healthcare services yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

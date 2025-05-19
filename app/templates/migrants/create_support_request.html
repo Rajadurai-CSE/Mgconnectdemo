@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Create Support Request - MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('migrants.dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Create Support Request</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white py-3">
+                    <h2 class="mb-0">Create Support Request</h2>
+                    <p class="mb-0">Let us know about any issues or concerns you're facing</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('migrants.create_support_request') }}" data-loading="true">
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="" selected disabled>Select a category</option>
+                                <option value="Housing">Housing</option>
+                                <option value="Employment">Employment</option>
+                                <option value="Wages">Wages</option>
+                                <option value="Documentation">Documentation</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="Safety">Workplace Safety</option>
+                                <option value="Legal">Legal Assistance</option>
+                                <option value="Education">Education</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="subject" name="subject" placeholder="Brief summary of your issue" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="5" placeholder="Provide details about your issue or concern..." required></textarea>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="fas fa-info-circle fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h5 class="alert-heading">How Support Requests Work</h5>
+                                    <p class="mb-0">Your request will be reviewed by an administrator and forwarded to the appropriate government department. You can track the status of your request in your dashboard. We aim to respond within 48 hours.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Submit Request</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

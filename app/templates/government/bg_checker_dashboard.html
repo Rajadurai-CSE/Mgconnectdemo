@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Background Checker Dashboard | MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Background Checker Dashboard</h4>
+                </div>
+                <div class="card-body">
+                    <h5>Welcome to your dashboard</h5>
+                    <p>You are assigned to verify migrants in: <strong>{{ area_assigned }}</strong></p>
+                    
+                    <div class="mt-4 mb-3">
+                        <h5>Pending Verifications</h5>
+                        <p>The following registrations need your verification:</p>
+                    </div>
+                    
+                    {% if pending_verifications %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Aadhar Number</th>
+                                    <th>Current Location</th>
+                                    <th>Native State</th>
+                                    <th>Company</th>
+                                    <th>Sector</th>
+                                    <th>Registered On</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for migrant in pending_verifications %}
+                                <tr>
+                                    <td>{{ migrant.personal_info.name }}</td>
+                                    <td>{{ migrant.personal_info.aadhar[-4:] | default('xxxx', true) }}</td>
+                                    <td>{{ migrant.personal_info.current_address }}</td>
+                                    <td>{{ migrant.personal_info.native_state }}</td>
+                                    <td>{{ migrant.personal_info.company }}</td>
+                                    <td>{{ migrant.personal_info.company_sector }}</td>
+                                    <td>{{ migrant.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        <a href="{{ url_for('government.verify_migrant', migrant_id=migrant._id) }}" class="btn btn-sm btn-primary">Verify</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <p>No pending verifications in your area at this time.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">Quick Tips for Verification</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Document Verification</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">Verify Aadhar card details with UIDAI database</li>
+                                        <li class="list-group-item">Check if the address matches with the current location</li>
+                                        <li class="list-group-item">Verify other identification documents if provided</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Employment Verification</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">Confirm with the employer about the migrant worker</li>
+                                        <li class="list-group-item">Verify job role and duration of employment</li>
+                                        <li class="list-group-item">Check for any discrepancies in the employment details</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

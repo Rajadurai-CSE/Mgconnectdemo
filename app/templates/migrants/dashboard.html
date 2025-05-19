@@ -1,0 +1,203 @@
+{% extends "base_custom.html" %}
+
+{% block title %}Migrant Dashboard - MigrantConnect TN{% endblock %}
+
+{% block section_header %}
+<div class="migrant-header py-4" style="background: linear-gradient(135deg, #4a154b 0%, #9147ff 100%); color: white;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold"><i class="fas fa-user-hard-hat me-2"></i>Migrant Worker Portal</h1>
+                <p class="lead mb-0">Access resources, find jobs, and get support specifically designed for migrant workers in Tamil Nadu</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="btn-group">
+                    <a href="{{ url_for('migrants.acts') }}" class="btn btn-light">
+                        <i class="fas fa-scroll me-1"></i> Labor Acts
+                    </a>
+                    <a href="{{ url_for('migrants.jobs') }}" class="btn btn-light">
+                        <i class="fas fa-briefcase me-1"></i> Jobs
+                    </a>
+                    <a href="{{ url_for('migrants.emergency') }}" class="btn btn-light">
+                        <i class="fas fa-phone-alt me-1"></i> Emergency
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Profile Status Alert -->
+    {% if not profile %}
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Your profile is incomplete. <a href="{{ url_for('migrants.setup_profile') }}">Complete your profile</a> to access all features.
+        </div>
+    {% elif profile.status == 'pending' %}
+        <div class="alert alert-info">
+            <i class="fas fa-clock me-2"></i>
+            Your profile is currently under review. You will be notified once it's approved.
+        </div>
+    {% elif profile.status == 'rejected' %}
+        <div class="alert alert-danger">
+            <i class="fas fa-times-circle me-2"></i>
+            Your profile has been rejected. Reason: {{ profile.rejection_reason }}
+            <a href="{{ url_for('migrants.setup_profile') }}" class="btn btn-sm btn-outline-danger ms-3">Update Profile</a>
+        </div>
+    {% elif profile.status == 'approved' %}
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle me-2"></i>
+            Your profile has been approved. Your Migrant ID: <strong>{{ profile.migrant_id }}</strong>
+        </div>
+    {% endif %}
+
+    <!-- Dashboard Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Migrant Dashboard</h1>
+    </div>
+    
+    <!-- Quick Navigation Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-4">
+            <a href="{{ url_for('migrants.acts') }}" class="text-decoration-none">
+                <div class="card bg-primary text-white shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-white p-3 me-3">
+                                <i class="fas fa-balance-scale text-primary fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0">Labor Acts</h5>
+                                <small>View laws and regulations</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 mb-4">
+            <a href="{{ url_for('migrants.jobs') }}" class="text-decoration-none">
+                <div class="card bg-success text-white shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-white p-3 me-3">
+                                <i class="fas fa-briefcase text-success fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0">Job Opportunities</h5>
+                                <small>Find work in your area</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 mb-4">
+            <a href="{{ url_for('migrants.services') }}" class="text-decoration-none">
+                <div class="card bg-info text-white shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-white p-3 me-3">
+                                <i class="fas fa-hands-helping text-info fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0">Services</h5>
+                                <small>Legal aid & housing</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-4 mb-4">
+            <a href="{{ url_for('migrants.education') }}" class="text-decoration-none">
+                <div class="card bg-warning text-white shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-white p-3 me-3">
+                                <i class="fas fa-graduation-cap text-warning fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0">Education</h5>
+                                <small>Child education & scholarships</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 mb-4">
+            <a href="{{ url_for('migrants.emergency') }}" class="text-decoration-none">
+                <div class="card bg-danger text-white shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-white p-3 me-3">
+                                <i class="fas fa-phone-alt text-danger fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0">Emergency</h5>
+                                <small>Police & emergency contacts</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 mb-4">
+            <a href="{{ url_for('migrants.view_profile') }}" class="text-decoration-none">
+                <div class="card bg-secondary text-white shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-white p-3 me-3">
+                                <i class="fas fa-user text-secondary fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0">My Profile</h5>
+                                <small>View & update your details</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Latest Announcements & Policies -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-bullhorn me-2"></i>Latest Announcements & Policies</h5>
+            <a href="{{ url_for('main.schemes') }}" class="btn btn-sm btn-light">View All</a>
+        </div>
+        <div class="card-body">
+            <div class="list-group">
+                {% for scheme in schemes %}
+                    <a href="{{ url_for('migrants.view_scheme', scheme_id=scheme._id) }}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ scheme.title }}</h6>
+                            <small class="text-muted">{{ scheme.created_at.strftime('%d %b %Y') }}</small>
+                        </div>
+                        <p class="mb-1 text-truncate">{{ scheme.description }}</p>
+                        <small class="text-muted">
+                            {% if scheme.sector %}
+                                Sector: {{ scheme.sector }}
+                            {% else %}
+                                For All Sectors
+                            {% endif %}
+                        </small>
+                    </a>
+                {% else %}
+                    <div class="text-center py-3">
+                        <i class="fas fa-info-circle text-info mb-2"></i>
+                        <p class="mb-0">No announcements available at the moment.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

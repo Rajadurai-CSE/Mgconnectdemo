@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Setup Profile - MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white py-3">
+                    <h2 class="mb-0">Complete Your Profile</h2>
+                    <p class="mb-0">Please provide your details to complete registration</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('migrants.setup_profile') }}" enctype="multipart/form-data">
+                        <h4 class="mb-3">Personal Information</h4>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select class="form-select" id="gender" name="gender" required>
+                                    <option value="" selected disabled>Select gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="dob" class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" id="dob" name="dob" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Current Address in Tamil Nadu</label>
+                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="home_state" class="form-label">Home State</label>
+                                <select class="form-select" id="home_state" name="home_state" required>
+                                    <option value="" selected disabled>Select your home state</option>
+                                    <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                    <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                    <option value="Assam">Assam</option>
+                                    <option value="Bihar">Bihar</option>
+                                    <option value="Chhattisgarh">Chhattisgarh</option>
+                                    <option value="Goa">Goa</option>
+                                    <option value="Gujarat">Gujarat</option>
+                                    <option value="Haryana">Haryana</option>
+                                    <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                    <option value="Jharkhand">Jharkhand</option>
+                                    <option value="Karnataka">Karnataka</option>
+                                    <option value="Kerala">Kerala</option>
+                                    <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                    <option value="Maharashtra">Maharashtra</option>
+                                    <option value="Manipur">Manipur</option>
+                                    <option value="Meghalaya">Meghalaya</option>
+                                    <option value="Mizoram">Mizoram</option>
+                                    <option value="Nagaland">Nagaland</option>
+                                    <option value="Odisha">Odisha</option>
+                                    <option value="Punjab">Punjab</option>
+                                    <option value="Rajasthan">Rajasthan</option>
+                                    <option value="Sikkim">Sikkim</option>
+                                    <option value="Tamil Nadu">Tamil Nadu</option>
+                                    <option value="Telangana">Telangana</option>
+                                    <option value="Tripura">Tripura</option>
+                                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                    <option value="Uttarakhand">Uttarakhand</option>
+                                    <option value="West Bengal">West Bengal</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="skills" class="form-label">Skills (comma separated)</label>
+                                <input type="text" class="form-control" id="skills" name="skills" placeholder="e.g. Construction, Welding, Driving">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="languages" class="form-label">Languages Known (comma separated)</label>
+                                <input type="text" class="form-control" id="languages" name="languages" placeholder="e.g. Hindi, Bengali, Tamil">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="education" class="form-label">Education Level</label>
+                            <select class="form-select" id="education" name="education">
+                                <option value="" selected disabled>Select education level</option>
+                                <option value="No formal education">No formal education</option>
+                                <option value="Primary education">Primary education</option>
+                                <option value="Secondary education">Secondary education</option>
+                                <option value="Higher secondary">Higher secondary</option>
+                                <option value="Graduation">Graduation</option>
+                                <option value="Post-graduation">Post-graduation</option>
+                                <option value="Vocational training">Vocational training</option>
+                            </select>
+                        </div>
+                        
+                        <h4 class="mt-4 mb-3">Document Upload</h4>
+                        <p class="text-muted mb-3">Please upload clear, legible copies of the following documents for verification.</p>
+                        
+                        <div class="mb-3">
+                            <label for="id_proof" class="form-label">Identity Proof (Aadhaar Card/Voter ID/PAN Card)</label>
+                            <input class="form-control" type="file" id="id_proof" name="id_proof" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="address_proof" class="form-label">Address Proof</label>
+                            <input class="form-control" type="file" id="address_proof" name="address_proof" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="photo" class="form-label">Recent Passport-sized Photo</label>
+                            <input class="form-control" type="file" id="photo" name="photo" required>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <small>
+                                <i class="fas fa-info-circle me-2"></i>
+                                Your profile information will be reviewed by an administrator. Upon approval, you will be assigned a unique ID that will help you access government services and job opportunities.
+                            </small>
+                        </div>
+                        
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Submit Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

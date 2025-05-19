@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Government Policies & Schemes - MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h1 class="mb-4">Government Policies & Schemes</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" id="policySearchInput" class="form-control" placeholder="Search policies...">
+                <button class="btn btn-outline-secondary" type="button" id="policySearchButton">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="input-group">
+                <select class="form-select" id="policySectorFilter">
+                    <option value="all" selected>All Sectors</option>
+                    <option value="Agriculture">Agriculture</option>
+                    <option value="Construction">Construction</option>
+                    <option value="Manufacturing">Manufacturing</option>
+                    <option value="Textile">Textile</option>
+                    <option value="Hospitality">Hospitality</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Retail">Retail</option>
+                    <option value="Transportation">Transportation</option>
+                    <option value="Domestic Work">Domestic Work</option>
+                    <option value="Food Processing">Food Processing</option>
+                </select>
+                <button class="btn btn-outline-secondary" type="button" id="policyFilterButton">
+                    <i class="fas fa-filter"></i> Filter
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for policy in policies %}
+        <div class="col-md-6 mb-4 policy-card" data-sector="{{ policy.sector|default('all') }}">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0">{{ policy.title }}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ policy.description[:150] }}{% if policy.description|length > 150 %}...{% endif %}</p>
+                    
+                    {% if policy.sector %}
+                    <div class="mb-3">
+                        <span class="badge bg-secondary">{{ policy.sector }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="text-end">
+                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#policyModal{{ policy._id }}">
+                            Read More
+                        </button>
+                    </div>
+                </div>
+                <div class="card-footer text-muted">
+                    <small>Published on: {{ policy.created_at.strftime('%d %b %Y') }}</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Policy Modal -->
+        <div class="modal fade" id="policyModal{{ policy._id }}" tabindex="-1" aria-labelledby="policyModalLabel{{ policy._id }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="policyModalLabel{{ policy._id }}">{{ policy.title }}</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-4">
+                            {{ policy.description|safe }}
+                        </div>
+                        
+                        {% if policy.sector %}
+                        <div class="mb-3">
+                            <strong>Target Sector:</strong> {{ policy.sector }}
+                        </div>
+                        {% endif %}
+                        
+                        {% if policy.eligibility %}
+                        <div class="mb-3">
+                            <h5>Eligibility</h5>
+                            <p>{{ policy.eligibility }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if policy.benefits %}
+                        <div class="mb-3">
+                            <h5>Benefits</h5>
+                            <p>{{ policy.benefits }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if policy.how_to_apply %}
+                        <div class="mb-3">
+                            <h5>How to Apply</h5>
+                            <p>{{ policy.how_to_apply }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if policy.documents_required %}
+                        <div class="mb-3">
+                            <h5>Required Documents</h5>
+                            <ul>
+                                {% for document in policy.documents_required %}
+                                <li>{{ document }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                        
+                        {% if policy.contact_information %}
+                        <div class="mb-3">
+                            <h5>Contact Information</h5>
+                            <p>{{ policy.contact_information }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        {% if policy.application_link %}
+                        <a href="{{ policy.application_link }}" target="_blank" class="btn btn-primary">Apply Now</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <span>No policies have been published yet. Please check back later.</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    // Policy search functionality
+    document.getElementById('policySearchButton').addEventListener('click', function() {
+        const searchTerm = document.getElementById('policySearchInput').value.toLowerCase();
+        const policyCards = document.querySelectorAll('.policy-card');
+        
+        policyCards.forEach(card => {
+            const title = card.querySelector('.card-header h5').textContent.toLowerCase();
+            const description = card.querySelector('.card-text').textContent.toLowerCase();
+            
+            if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+    
+    // Policy filter functionality
+    document.getElementById('policyFilterButton').addEventListener('click', function() {
+        const selectedSector = document.getElementById('policySectorFilter').value;
+        const policyCards = document.querySelectorAll('.policy-card');
+        
+        policyCards.forEach(card => {
+            if (selectedSector === 'all' || card.dataset.sector === selectedSector || card.dataset.sector === 'all') {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

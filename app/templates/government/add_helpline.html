@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Emergency Helpline | MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Add Emergency Helpline</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('government.add_helpline') }}">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Emergency helplines provide immediate support to migrant workers in case of emergencies or issues.
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="district" class="form-label">District <span class="text-danger">*</span></label>
+                            <select class="form-select" id="district" name="district" required>
+                                <option value="" selected disabled>Select district</option>
+                                <option value="Chennai">Chennai</option>
+                                <option value="Coimbatore">Coimbatore</option>
+                                <option value="Madurai">Madurai</option>
+                                <option value="Trichy">Trichy</option>
+                                <option value="Salem">Salem</option>
+                                <option value="Tirunelveli">Tirunelveli</option>
+                                <option value="Vellore">Vellore</option>
+                                <option value="Thoothukudi">Thoothukudi</option>
+                                <option value="Dindigul">Dindigul</option>
+                                <option value="Thanjavur">Thanjavur</option>
+                                <option value="Erode">Erode</option>
+                                <option value="Tirupur">Tirupur</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="police_helpline" class="form-label">Police Helpline <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" id="police_helpline" name="police_helpline" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="labor_helpline" class="form-label">Labor Helpline <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" id="labor_helpline" name="labor_helpline" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="women_helpline" class="form-label">Women Helpline</label>
+                            <input type="tel" class="form-control" id="women_helpline" name="women_helpline">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="child_helpline" class="form-label">Child Helpline</label>
+                            <input type="tel" class="form-control" id="child_helpline" name="child_helpline">
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('government.manage_helplines') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Helpline</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

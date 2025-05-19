@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Labor Acts & Regulations - MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Profile Status Alert -->
+    {% if not profile %}
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Your profile is incomplete. <a href="{{ url_for('migrants.setup_profile') }}">Complete your profile</a> to access all features.
+        </div>
+    {% elif profile.status == 'pending' %}
+        <div class="alert alert-info">
+            <i class="fas fa-clock me-2"></i>
+            Your profile is currently under review. You will be notified once it's approved.
+        </div>
+    {% elif profile.status == 'rejected' %}
+        <div class="alert alert-danger">
+            <i class="fas fa-times-circle me-2"></i>
+            Your profile has been rejected. Reason: {{ profile.rejection_reason }}
+            <a href="{{ url_for('migrants.setup_profile') }}" class="btn btn-sm btn-outline-danger ms-3">Update Profile</a>
+        </div>
+    {% endif %}
+
+    <!-- Page Header with Back Link -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Labor Acts & Regulations</h1>
+        <a href="{{ url_for('migrants.dashboard') }}" class="btn btn-sm btn-outline-primary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Acts & Regulations List -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="mb-0"><i class="fas fa-balance-scale me-2"></i>Labor Protection Acts</h5>
+        </div>
+        <div class="card-body">
+            <div class="list-group">
+                {% for act in acts %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0">{{ act.title }}</h5>
+                            <span class="badge bg-primary">{{ act.created_at.strftime('%d %b %Y') }}</span>
+                        </div>
+                        <p>{{ act.description }}</p>
+                        {% if act.document_url %}
+                            <a href="{{ act.document_url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                <i class="fas fa-file-pdf me-1"></i> View Document
+                            </a>
+                        {% endif %}
+                        <div class="mt-2 small text-muted">
+                            <i class="fas fa-tags me-1"></i>
+                            {% if act.sector %}
+                                Sector: {{ act.sector }} | 
+                            {% endif %}
+                            {% if act.effective_date %}
+                                Effective from: {{ act.effective_date.strftime('%d %b %Y') }}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-info-circle text-info mb-3 fa-3x"></i>
+                        <p class="mb-0">No labor acts or regulations available at the moment.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Workers Rights -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-info text-white py-3">
+            <h5 class="mb-0"><i class="fas fa-hand-holding-heart me-2"></i>Key Worker Rights</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-money-bill-wave text-success me-2"></i>Wage Rights</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Minimum wage rates according to skill level</li>
+                                <li class="list-group-item">Right to overtime pay (1.5x regular rate)</li>
+                                <li class="list-group-item">Timely payment of wages (7 days after wage period)</li>
+                                <li class="list-group-item">No unauthorized deductions from wages</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-clock text-primary me-2"></i>Work Hours & Leave</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">8-hour workday, 48-hour workweek</li>
+                                <li class="list-group-item">One day off per week</li>
+                                <li class="list-group-item">Earned leave with wages</li>
+                                <li class="list-group-item">Paid national and festival holidays</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-hard-hat text-warning me-2"></i>Safety & Health</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Right to safe working conditions</li>
+                                <li class="list-group-item">Right to personal protective equipment</li>
+                                <li class="list-group-item">Medical benefits for work-related injuries</li>
+                                <li class="list-group-item">Compensation for workplace accidents</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-users text-danger me-2"></i>Equality & Dignity</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Equal pay for equal work</li>
+                                <li class="list-group-item">Protection against harassment</li>
+                                <li class="list-group-item">No discrimination based on gender, caste, etc.</li>
+                                <li class="list-group-item">Right to form and join trade unions</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

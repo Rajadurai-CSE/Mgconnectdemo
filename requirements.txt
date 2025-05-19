@@ -1,0 +1,11 @@
+Flask==2.3.3
+flask-pymongo==2.3.0
+Werkzeug==2.3.7
+python-dotenv==1.0.0
+bcrypt==4.0.1
+Flask-WTF==1.1.1
+email-validator==2.0.0
+pymongo==4.5.0
+Flask-Login==0.6.2
+Pillow==10.0.0
+itsdangerous==2.1.2

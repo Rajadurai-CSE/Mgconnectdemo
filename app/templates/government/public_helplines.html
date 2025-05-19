@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block title %}Emergency Helplines | MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Emergency Helplines</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <span class="translate-text">These emergency helplines are available to provide immediate support in case of emergencies or issues you may face. Save these numbers for quick access.</span>
+                    </div>
+                    
+                    <div class="translate-button-container text-end mb-3">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline-primary translate-btn" data-lang="en">English</button>
+                            <button type="button" class="btn btn-outline-primary translate-btn" data-lang="ta">u0ba4u0baeu0bbfu0bb4u0bcd</button>
+                            <button type="button" class="btn btn-outline-primary translate-btn" data-lang="hi">u0939u093fu0902u0926u0940</button>
+                            <button type="button" class="btn btn-outline-primary translate-btn" data-lang="te">u0c24u0c46u0c32u0c41u0c17u0c41</button>
+                            <button type="button" class="btn btn-outline-primary translate-btn" data-lang="ml">u0d2eu0d32u0d2fu0d3eu0d33u0d02</button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="districtFilter" class="form-label translate-text">Search by District</label>
+                        <input type="text" class="form-control" id="districtFilter" placeholder="Type district name to filter...">
+                    </div>
+                    
+                    {% if helplines %}
+                    <div class="row row-cols-1 row-cols-md-3 g-4" id="helplineCards">
+                        {% for helpline in helplines %}
+                        <div class="col helpline-card" data-district="{{ helpline.district.lower() }}">
+                            <div class="card h-100 border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0 translate-text">{{ helpline.district }}</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-danger text-white p-2 rounded-circle me-3">
+                                            <i class="fas fa-shield-alt"></i>
+                                        </div>
+                                        <div>
+                                            <span class="d-block translate-text">Police Helpline</span>
+                                            <strong>{{ helpline.police_helpline }}</strong>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-success text-white p-2 rounded-circle me-3">
+                                            <i class="fas fa-hard-hat"></i>
+                                        </div>
+                                        <div>
+                                            <span class="d-block translate-text">Labor Helpline</span>
+                                            <strong>{{ helpline.labor_helpline }}</strong>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if helpline.women_helpline %}
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="bg-info text-white p-2 rounded-circle me-3">
+                                            <i class="fas fa-female"></i>
+                                        </div>
+                                        <div>
+                                            <span class="d-block translate-text">Women Helpline</span>
+                                            <strong>{{ helpline.women_helpline }}</strong>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if helpline.child_helpline %}
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-warning text-white p-2 rounded-circle me-3">
+                                            <i class="fas fa-child"></i>
+                                        </div>
+                                        <div>
+                                            <span class="d-block translate-text">Child Helpline</span>
+                                            <strong>{{ helpline.child_helpline }}</strong>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="card-footer text-center">
+                                    <a href="tel:{{ helpline.police_helpline }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-phone"></i> <span class="translate-text">Call Police</span>
+                                    </a>
+                                    <a href="tel:{{ helpline.labor_helpline }}" class="btn btn-sm btn-outline-success">
+                                        <i class="fas fa-phone"></i> <span class="translate-text">Call Labor</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <p class="translate-text">No helplines found. Please check back later.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/google-translate-api@3.0.0/dist/index.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // District filter functionality
+        const districtFilter = document.getElementById('districtFilter');
+        const helplineCards = document.querySelectorAll('.helpline-card');
+        
+        districtFilter.addEventListener('keyup', function() {
+            const searchText = this.value.toLowerCase();
+            
+            helplineCards.forEach(card => {
+                const district = card.getAttribute('data-district');
+                if (district.includes(searchText)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+        
+        // Translation functionality
+        const translateButtons = document.querySelectorAll('.translate-btn');
+        
+        translateButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const targetLang = this.getAttribute('data-lang');
+                translatePage(targetLang);
+                
+                // Set active class
+                translateButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        function translatePage(targetLang) {
+            // If it's English, reset to original content
+            if (targetLang === 'en') {
+                location.reload();
+                return;
+            }
+            
+            // Otherwise use Google Translate
+            const textsToTranslate = document.querySelectorAll('.translate-text');
+            
+            // Create Google Translate element
+            const googleTranslateElement = document.createElement('div');
+            googleTranslateElement.id = 'google_translate_element';
+            googleTranslateElement.style.display = 'none';
+            document.body.appendChild(googleTranslateElement);
+            
+            // Initialize Google Translate
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: targetLang,
+                autoDisplay: false
+            }, 'google_translate_element');
+            
+            // Trigger translation
+            const translateCombo = document.querySelector('.goog-te-combo');
+            if (translateCombo) {
+                translateCombo.value = targetLang;
+                translateCombo.dispatchEvent(new Event('change'));
+            }
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

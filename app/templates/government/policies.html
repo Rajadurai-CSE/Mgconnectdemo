@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Policies | MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Policies & Announcements</h4>
+                    <a href="{{ url_for('government.add_policy') }}" class="btn btn-light">Add New Policy</a>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Policies and announcements published here will be visible to all migrant workers on the platform.
+                    </div>
+                    
+                    {% if policies %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Sector</th>
+                                    <th>Published Date</th>
+                                    <th>Document</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for policy in policies %}
+                                <tr>
+                                    <td>{{ policy.title }}</td>
+                                    <td>{{ policy.sector or 'All Sectors' }}</td>
+                                    <td>{{ policy.published_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        {% if policy.document_url %}
+                                        <a href="{{ policy.document_url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-file-pdf"></i> View
+                                        </a>
+                                        {% else %}
+                                        <span class="text-muted">No document</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if policy.status == 'active' %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                        <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <p>No policies found. <a href="{{ url_for('government.add_policy') }}">Add your first policy</a>.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

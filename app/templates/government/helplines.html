@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Emergency Helplines | MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Emergency Helplines</h4>
+                    <a href="{{ url_for('government.add_helpline') }}" class="btn btn-light">Add New Helpline</a>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Emergency helplines provide immediate support to migrant workers in case of emergencies or issues.
+                    </div>
+                    
+                    {% if helplines %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>District</th>
+                                    <th>Police Helpline</th>
+                                    <th>Labor Helpline</th>
+                                    <th>Women Helpline</th>
+                                    <th>Child Helpline</th>
+                                    <th>Last Updated</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for helpline in helplines %}
+                                <tr>
+                                    <td>{{ helpline.district }}</td>
+                                    <td>{{ helpline.police_helpline }}</td>
+                                    <td>{{ helpline.labor_helpline }}</td>
+                                    <td>{{ helpline.women_helpline or 'N/A' }}</td>
+                                    <td>{{ helpline.child_helpline or 'N/A' }}</td>
+                                    <td>{{ helpline.updated_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <p>No helplines found. <a href="{{ url_for('government.add_helpline') }}">Add your first helpline</a>.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

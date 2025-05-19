@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Background Checkers | MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Background Checkers</h4>
+                    <a href="{{ url_for('government.add_bg_checker') }}" class="btn btn-light">Add New Checker</a>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Background checkers verify migrant registrations and ensure the accuracy of the information provided.
+                    </div>
+                    
+                    {% if bg_checkers %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Area Assigned</th>
+                                    <th>Status</th>
+                                    <th>Created On</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for checker in bg_checkers %}
+                                <tr>
+                                    <td>{{ checker.name }}</td>
+                                    <td>{{ checker.email }}</td>
+                                    <td>{{ checker.phone }}</td>
+                                    <td>{{ checker.area_assigned }}</td>
+                                    <td>
+                                        {% if checker.status == 'active' %}
+                                        <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ checker.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                        <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <p>No background checkers found. <a href="{{ url_for('government.add_bg_checker') }}">Add your first background checker</a>.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

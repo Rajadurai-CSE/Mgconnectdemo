@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}District Police Helplines - MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Profile Status Alert -->
+    {% if not profile %}
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Your profile is incomplete. <a href="{{ url_for('migrants.setup_profile') }}">Complete your profile</a> to access all features.
+        </div>
+    {% elif profile.status == 'pending' %}
+        <div class="alert alert-info">
+            <i class="fas fa-clock me-2"></i>
+            Your profile is currently under review. You will be notified once it's approved.
+        </div>
+    {% elif profile.status == 'rejected' %}
+        <div class="alert alert-danger">
+            <i class="fas fa-times-circle me-2"></i>
+            Your profile has been rejected. Reason: {{ profile.rejection_reason }}
+            <a href="{{ url_for('migrants.setup_profile') }}" class="btn btn-sm btn-outline-danger ms-3">Update Profile</a>
+        </div>
+    {% endif %}
+
+    <!-- Page Header with Back Links -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">District Police Helplines</h1>
+        <div>
+            <a href="{{ url_for('migrants.emergency') }}" class="btn btn-sm btn-outline-primary me-2">
+                <i class="fas fa-arrow-left me-1"></i> Back to Emergency Services
+            </a>
+            <a href="{{ url_for('migrants.dashboard') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-home me-1"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- District Search Form -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('migrants.district_police') }}" class="row g-3 align-items-end">
+                <div class="col-md-6">
+                    <label for="district" class="form-label">Select Your District</label>
+                    <select class="form-select" id="district" name="district" required>
+                        <option value="" {% if not selected_district %}selected{% endif %}>-- Select a District --</option>
+                        {% for district in districts %}
+                            <option value="{{ district }}" {% if selected_district == district %}selected{% endif %}>{{ district }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search me-2"></i> Find Police Helpline
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- District Police Information -->
+    {% if district_police_info %}
+        <div class="card shadow-sm mb-4 border-primary">
+            <div class="card-header bg-primary text-white py-3">
+                <h5 class="mb-0"><i class="fas fa-shield-alt me-2"></i>{{ district_police_info.district }} District Police Contact Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2"><i class="fas fa-phone-alt text-primary me-2"></i>Helpline Numbers</h5>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h6 class="mb-0">District Police Control Room</h6>
+                                    <p class="text-muted small mb-0">24/7 Emergency Assistance</p>
+                                </div>
+                                <a href="tel:{{ district_police_info.helpline_number }}" class="btn btn-lg btn-outline-danger">
+                                    <i class="fas fa-phone-alt me-2"></i> {{ district_police_info.helpline_number }}
+                                </a>
+                            </div>
+                            
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Important:</strong> {{ district_police_info.additional_info }}
+                            </div>
+                            
+                            {% if district_police_info.special_units %}
+                                <h6 class="mt-3">Special Units</h6>
+                                <ul class="list-group">
+                                    {% for unit in district_police_info.special_units %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span>{{ unit.name }}</span>
+                                            <a href="tel:{{ unit.number }}" class="btn btn-sm btn-outline-danger">
+                                                {{ unit.number }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2"><i class="fas fa-info-circle text-primary me-2"></i>Contact Information</h5>
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    <i class="fas fa-building text-primary me-2"></i>
+                                    <strong>Address:</strong> {{ district_police_info.address }}
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-envelope text-primary me-2"></i>
+                                    <strong>Email:</strong> {{ district_police_info.email }}
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-user-shield text-primary me-2"></i>
+                                    <strong>Contact Person:</strong> {{ district_police_info.emergency_contact_person }}
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-language text-primary me-2"></i>
+                                    <strong>Languages Supported:</strong> {{ district_police_info.languages|join(', ') }}
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2"><i class="fas fa-clipboard-list text-primary me-2"></i>Services Provided</h5>
+                            <div class="row">
+                                {% for service in district_police_info.services %}
+                                    <div class="col-md-6 mb-2">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            <span>{{ service }}</span>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% elif selected_district %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            No helpline information available for the selected district. Please try another district or contact the general emergency number 100.
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            Please select a district to view specific police helpline numbers.
+        </div>
+    {% endif %}
+
+    <!-- General Information -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-secondary text-white py-3">
+            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>When to Contact District Police</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-check-circle text-success me-2"></i>Contact District Police For:</h5>
+                    <ul class="list-group list-group-flush mb-4">
+                        <li class="list-group-item">
+                            <i class="fas fa-angle-right text-primary me-2"></i>Filing a police complaint in your district
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-angle-right text-primary me-2"></i>Reporting suspicious activities in your area
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-angle-right text-primary me-2"></i>Information about local police stations
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-angle-right text-primary me-2"></i>Getting police verification for documents
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-angle-right text-primary me-2"></i>Reporting lost documents or belongings
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5><i class="fas fa-exclamation-circle text-danger me-2"></i>For Immediate Emergencies:</h5>
+                    <div class="alert alert-danger">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <i class="fas fa-phone-alt fa-3x"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0">Dial 100</h5>
+                                <p class="mb-0">For any immediate emergency requiring police assistance</p>
+                            </div>
+                        </div>
+                        <p class="mb-0">The unified emergency number 100 is available across all districts and will connect you to the nearest police control room.</p>
+                    </div>
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Important:</strong> Always dial 100 first for immediate emergencies. Use district helplines for non-emergency assistance specific to your location.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .icon-circle {
+        height: 4rem;
+        width: 4rem;
+        border-radius: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}

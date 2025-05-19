@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+{% block title %}Emergency Services - MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Profile Status Alert -->
+    {% if not profile %}
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Your profile is incomplete. <a href="{{ url_for('migrants.setup_profile') }}">Complete your profile</a> to access all features.
+        </div>
+    {% elif profile.status == 'pending' %}
+        <div class="alert alert-info">
+            <i class="fas fa-clock me-2"></i>
+            Your profile is currently under review. You will be notified once it's approved.
+        </div>
+    {% elif profile.status == 'rejected' %}
+        <div class="alert alert-danger">
+            <i class="fas fa-times-circle me-2"></i>
+            Your profile has been rejected. Reason: {{ profile.rejection_reason }}
+            <a href="{{ url_for('migrants.setup_profile') }}" class="btn btn-sm btn-outline-danger ms-3">Update Profile</a>
+        </div>
+    {% endif %}
+
+    <!-- Page Header with Back Link -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Emergency Services</h1>
+        <a href="{{ url_for('migrants.dashboard') }}" class="btn btn-sm btn-outline-primary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- District Police Helplines Quick Access -->
+    <div class="card shadow-sm mb-4 border-primary">
+        <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-shield-alt me-2"></i>District Police Helplines</h5>
+            <a href="{{ url_for('migrants.district_police') }}" class="btn btn-sm btn-light">View All Districts</a>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <span>Find police helpline numbers specific to your district in Tamil Nadu.</span>
+            </div>
+            
+            <form method="GET" action="{{ url_for('migrants.district_police') }}" class="row g-3 align-items-end">
+                <div class="col-md-9">
+                    <label for="district" class="form-label">Select Your District</label>
+                    <select class="form-select" id="district" name="district" required>
+                        <option value="">-- Select a District --</option>
+                        {% for district in all_districts %}
+                            <option value="{{ district }}">{{ district }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search me-2"></i> Find
+                    </button>
+                </div>
+            </form>
+            
+            <div class="mt-3 text-center">
+                <p class="mb-0"><strong>Remember:</strong> For immediate emergencies, always dial <a href="tel:100" class="btn btn-sm btn-danger ms-2">100</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Emergency Helplines -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-danger text-white py-3">
+            <h5 class="mb-0"><i class="fas fa-phone-alt me-2"></i>Emergency Helplines</h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Save these important numbers!</strong> These helplines are available 24/7 for immediate assistance.
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card border-danger h-100">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="mb-0">General Emergency Services</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-ambulance text-danger me-2"></i>
+                                        <strong>Ambulance</strong>
+                                        <p class="text-muted small mb-0">Medical emergencies</p>
+                                    </div>
+                                    <a href="tel:108" class="btn btn-danger">108</a>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-shield-alt text-danger me-2"></i>
+                                        <strong>Police</strong>
+                                        <p class="text-muted small mb-0">Crime, theft, personal safety</p>
+                                    </div>
+                                    <a href="tel:100" class="btn btn-danger">100</a>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-fire text-danger me-2"></i>
+                                        <strong>Fire</strong>
+                                        <p class="text-muted small mb-0">Fire emergencies</p>
+                                    </div>
+                                    <a href="tel:101" class="btn btn-danger">101</a>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-first-aid text-danger me-2"></i>
+                                        <strong>Emergency Unified Number</strong>
+                                        <p class="text-muted small mb-0">All emergency services</p>
+                                    </div>
+                                    <a href="tel:112" class="btn btn-danger">112</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="card border-danger h-100">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="mb-0">Specialized Helplines</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-female text-danger me-2"></i>
+                                        <strong>Women's Helpline</strong>
+                                        <p class="text-muted small mb-0">Harassment, abuse, violence</p>
+                                    </div>
+                                    <a href="tel:1091" class="btn btn-danger">1091</a>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-child text-danger me-2"></i>
+                                        <strong>Child Helpline</strong>
+                                        <p class="text-muted small mb-0">Child abuse, child labor issues</p>
+                                    </div>
+                                    <a href="tel:1098" class="btn btn-danger">1098</a>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-briefcase text-danger me-2"></i>
+                                        <strong>Labor Helpline</strong>
+                                        <p class="text-muted small mb-0">Exploitation, wage theft, unsafe work</p>
+                                    </div>
+                                    <a href="tel:1800-425-1400" class="btn btn-danger">1800-425-1400</a>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-hand-holding-heart text-danger me-2"></i>
+                                        <strong>Mental Health Helpline</strong>
+                                        <p class="text-muted small mb-0">Emotional support, counseling</p>
+                                    </div>
+                                    <a href="tel:1800-599-0019" class="btn btn-danger">1800-599-0019</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Situations Guide -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Common Emergency Situations Guide</h5>
+        </div>
+        <div class="card-body">
+            <div class="accordion" id="emergencyAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            <i class="fas fa-first-aid text-danger me-2"></i>Medical Emergency
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#emergencyAccordion">
+                        <div class="accordion-body">
+                            <h6 class="mb-2">What to do:</h6>
+                            <ol>
+                                <li>Call 108 for ambulance or 112 for emergency services.</li>
+                                <li>Provide clear location details including landmarks.</li>
+                                <li>If possible, send someone to guide the ambulance.</li>
+                                <li>While waiting, keep the person comfortable and follow first aid if you know how.</li>
+                                <li>Have your or the patient's ID ready if available.</li>
+                                <li>Public hospitals must provide emergency care regardless of documentation.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            <i class="fas fa-exclamation-triangle text-warning me-2"></i>Workplace Accident
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#emergencyAccordion">
+                        <div class="accordion-body">
+                            <h6 class="mb-2">What to do:</h6>
+                            <ol>
+                                <li>Call 108 for ambulance if there's an injury.</li>
+                                <li>Notify supervisor immediately.</li>
+                                <li>Document the accident with photos if possible.</li>
+                                <li>Get names of witnesses.</li>
+                                <li>Seek medical attention even for minor injuries.</li>
+                                <li>Request a copy of the accident report.</li>
+                                <li>Call labor helpline (1800-425-1400) for guidance on worker compensation.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            <i class="fas fa-hand-paper text-danger me-2"></i>Harassment or Exploitation
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#emergencyAccordion">
+                        <div class="accordion-body">
+                            <h6 class="mb-2">What to do:</h6>
+                            <ol>
+                                <li>If in immediate danger, call Police (100) or Emergency (112).</li>
+                                <li>For women, call Women's Helpline (1091).</li>
+                                <li>Document incidents: dates, times, what happened, who was present.</li>
+                                <li>Save any threatening messages, emails, or voicemails.</li>
+                                <li>Report to labor department using Labor Helpline (1800-425-1400).</li>
+                                <li>Contact legal aid services for guidance.</li>
+                                <li>Do not confront the harasser alone if you feel unsafe.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingFour">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                            <i class="fas fa-home text-primary me-2"></i>Eviction or Housing Issues
+                        </button>
+                    </h2>
+                    <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#emergencyAccordion">
+                        <div class="accordion-body">
+                            <h6 class="mb-2">What to do:</h6>
+                            <ol>
+                                <li>If being forcibly evicted, call Police (100).</li>
+                                <li>Document everything: take photos of your belongings and the property.</li>
+                                <li>Request written notice for eviction if not provided.</li>
+                                <li>Contact legal aid for immediate assistance.</li>
+                                <li>Reach out to housing services NGOs for temporary accommodation.</li>
+                                <li>Do not sign any documents under pressure.</li>
+                                <li>Know your rights: forcible eviction without proper notice is illegal.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nearest Medical Facilities -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success text-white py-3">
+            <h5 class="mb-0"><i class="fas fa-hospital me-2"></i>Nearest Medical Facilities</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Enter your location" id="locationInput">
+                    <button class="btn btn-success" type="button" id="findHospitals">
+                        <i class="fas fa-search me-1"></i> Find Hospitals
+                    </button>
+                </div>
+                <small class="form-text text-muted">Enter your location to find government hospitals and clinics near you.</small>
+            </div>
+            
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Remember:</strong> Government hospitals provide free or low-cost treatment. You have the right to emergency medical care regardless of your documentation status.
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Hospital Name</th>
+                            <th>Type</th>
+                            <th>Address</th>
+                            <th>Contact</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if hospitals %}
+                            {% for hospital in hospitals %}
+                                <tr>
+                                    <td>{{ hospital.name }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if hospital.type == 'Government' %}primary{% else %}secondary{% endif %}">
+                                            {{ hospital.type }}
+                                        </span>
+                                    </td>
+                                    <td>{{ hospital.address }}</td>
+                                    <td>{{ hospital.contact }}</td>
+                                    <td>
+                                        <a href="tel:{{ hospital.contact }}" class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-phone me-1"></i> Call
+                                        </a>
+                                        {% if hospital.location %}
+                                            <a href="https://maps.google.com/?q={{ hospital.location }}" class="btn btn-sm btn-outline-primary ms-1" target="_blank">
+                                                <i class="fas fa-map-marker-alt me-1"></i> Map
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-3">
+                                    <i class="fas fa-hospital-alt text-muted mb-2"></i>
+                                    <p class="mb-0">Enter your location above to find hospitals near you</p>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

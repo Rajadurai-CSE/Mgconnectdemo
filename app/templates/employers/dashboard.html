@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Employer Dashboard - MigrantConnect TN{% endblock %}
+
+{% block section_header %}
+<div class="employer-header py-4" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold"><i class="fas fa-building me-2"></i>Employer Portal</h1>
+                <p class="lead mb-0">Post jobs, manage migrant worker recruitment, and access employer resources</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="btn-group">
+                    <a href="{{ url_for('employers.view_jobs') }}" class="btn btn-light">
+                        <i class="fas fa-list me-1"></i> My Jobs
+                    </a>
+                    <a href="{{ url_for('employers.view_employees') }}" class="btn btn-light">
+                        <i class="fas fa-users me-1"></i> Employees
+                    </a>
+                    <a href="{{ url_for('employers.post_job') }}" class="btn btn-light">
+                        <i class="fas fa-plus-circle me-1"></i> Post Job
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Profile Status Alert -->
+    {% if not profile %}
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Your company profile is incomplete. <a href="{{ url_for('employers.setup_profile') }}">Complete your profile</a> to access all features.
+        </div>
+    {% endif %}
+
+    <!-- Dashboard Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Employer Dashboard</h1>
+        {% if profile %}
+            <div>
+                <a href="{{ url_for('employers.post_job') }}" class="btn btn-sm btn-primary me-2">
+                    <i class="fas fa-plus-circle me-1"></i> Post New Job
+                </a>
+                <a href="{{ url_for('employers.add_migrant') }}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-user-plus me-1"></i> Add Migrant
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="row">
+        <!-- Company Profile Card -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-building me-2"></i>Company Profile</h5>
+                </div>
+                <div class="card-body">
+                    {% if profile %}
+                        <div class="text-center mb-3">
+                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto" style="width: 120px; height: 120px;">
+                                <i class="fas fa-building fa-4x text-primary"></i>
+                            </div>
+                        </div>
+                        <h5 class="text-center mb-3">{{ profile.company_info.name }}</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Industry
+                                <span class="badge bg-primary">{{ profile.company_info.industry }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Location
+                                <span>{{ profile.company_info.city }}, {{ profile.company_info.state }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Size
+                                <span>{{ profile.company_info.company_size }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Contact
+                                <span>{{ profile.company_info.contact_person }}</span>
+                            </li>
+                        </ul>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-building fa-4x text-secondary mb-3"></i>
+                            <h5>Company Profile Not Setup</h5>
+                            <p>Please complete your company profile to access all features.</p>
+                            <a href="{{ url_for('employers.setup_profile') }}" class="btn btn-primary">Setup Profile</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Statistics -->
+        <div class="col-lg-8 mb-4">
+            <div class="row">
+                <!-- Jobs Posted -->
+                <div class="col-md-6 mb-4">
+                    <div class="card border-left-primary shadow-sm h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Jobs Posted</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ jobs|length }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-briefcase fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employees -->
+                <div class="col-md-6 mb-4">
+                    <div class="card border-left-success shadow-sm h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Migrant Employees</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ employees|length }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-users fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jobs Section -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-briefcase me-2"></i>Your Job Postings</h5>
+                    <a href="{{ url_for('employers.post_job') }}" class="btn btn-sm btn-light">
+                        <i class="fas fa-plus-circle me-1"></i> Post New Job
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Job Title</th>
+                                    <th>Location</th>
+                                    <th>Positions</th>
+                                    <th>Posted On</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for job in jobs %}
+                                    <tr>
+                                        <td>{{ job.details.title }}</td>
+                                        <td>{{ job.details.location }}</td>
+                                        <td>{{ job.details.number_of_positions }}</td>
+                                        <td>{{ job.created_at.strftime('%d %b %Y') }}</td>
+                                        <td>
+                                            <a href="{{ url_for('employers.view_job', job_id=job.job_id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-3">
+                                            <i class="fas fa-info-circle text-info"></i>
+                                            <p class="mb-0 mt-2">You haven't posted any jobs yet.</p>
+                                            <a href="{{ url_for('employers.post_job') }}" class="btn btn-sm btn-primary mt-2">Post Your First Job</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employees Section -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-users me-2"></i>Your Employees</h5>
+                    <a href="{{ url_for('employers.add_migrant') }}" class="btn btn-sm btn-light">
+                        <i class="fas fa-user-plus me-1"></i> Add Migrant
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Migrant ID</th>
+                                    <th>Job Role</th>
+                                    <th>Start Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for employee in employees %}
+                                    <tr>
+                                        <td>{{ employee.personal_info.name }}</td>
+                                        <td>{{ employee.migrant_id }}</td>
+                                        <td>{{ employee.job_details.title }}</td>
+                                        <td>{{ employee.start_date.strftime('%d %b %Y') }}</td>
+                                        <td>
+                                            <span class="badge {% if employee.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">
+                                                {{ employee.status|capitalize }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-3">
+                                            <i class="fas fa-info-circle text-info"></i>
+                                            <p class="mb-0 mt-2">You don't have any migrant employees added yet.</p>
+                                            <a href="{{ url_for('employers.add_migrant') }}" class="btn btn-sm btn-primary mt-2">Add Migrant</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,360 @@
+{% extends "base.html" %}
+
+{% block title %}Home - MigrantConnect TN{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">MigrantConnect TN</h1>
+                <p class="lead mb-4">A comprehensive platform for migrant workers in Tamil Nadu ensuring smooth registration, effective tracking, and complete support.</p>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                    {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg px-4 me-md-2">Register Now</a>
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-secondary btn-lg px-4">Login</a>
+                    {% else %}
+                        {% if current_user.role == 'migrant' %}
+                            <a href="{{ url_for('migrants.dashboard') }}" class="btn btn-primary btn-lg px-4 me-md-2">My Dashboard</a>
+                        {% elif current_user.role == 'employer' %}
+                            <a href="{{ url_for('employers.dashboard') }}" class="btn btn-primary btn-lg px-4 me-md-2">Employer Dashboard</a>
+                        {% elif current_user.role == 'admin' %}
+                            <a href="{{ url_for('government.admin_dashboard') }}" class="btn btn-primary btn-lg px-4 me-md-2">Admin Dashboard</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6 mt-4 mt-lg-0">
+                <img src="../../static/images/tn_logo.jpg" alt="Migrant Workers" class="img-fluid rounded shadow" style="margin-left: 200px;">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section py-4 bg-primary text-white">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4 mb-3 mb-md-0">
+                <h2 class="display-6">{{ stats.migrants }}</h2>
+                <p class="lead">Registered Migrants</p>
+            </div>
+            <div class="col-md-4 mb-3 mb-md-0">
+                <h2 class="display-6">{{ stats.employers }}</h2>
+                <p class="lead">Registered Employers</p>
+            </div>
+            <div class="col-md-4">
+                <h2 class="display-6">{{ stats.jobs }}</h2>
+                <p class="lead">Active Jobs</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Key Features</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-id-card fa-3x text-primary mb-3"></i>
+                        <h3 class="card-title">Registration & Unique ID</h3>
+                        <p class="card-text">Easy registration process with document verification and unique ID generation for better identification.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
+                        <h3 class="card-title">Effective Tracking</h3>
+                        <p class="card-text">Track employment details across sectors and maintain accurate workforce records.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-hands-helping fa-3x text-primary mb-3"></i>
+                        <h3 class="card-title">Support System</h3>
+                        <p class="card-text">Dedicated support system to address challenges with real-time query tracking.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-language fa-3x text-primary mb-3"></i>
+                        <h3 class="card-title">Multilingual Support</h3>
+                        <p class="card-text">Platform supports multiple languages ensuring accessibility for workers from various regions.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                        <h3 class="card-title">Community Support</h3>
+                        <p class="card-text">Connect with others in similar industries to enhance social and professional networks.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-book-open fa-3x text-primary mb-3"></i>
+                        <h3 class="card-title">Schemes & Policies</h3>
+                        <p class="card-text">Customized recommendations for government schemes and policies based on your sector.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Latest Schemes Section -->
+<section class="schemes-section py-5 bg-light">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Latest Schemes & Policies</h2>
+            <a href="{{ url_for('main.schemes') }}" class="btn btn-outline-primary">View All</a>
+        </div>
+        <div class="row">
+            {% for scheme in latest_schemes %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title h5">{{ scheme.title }}</h3>
+                            <p class="card-text small text-muted">
+                                {% if scheme.sector %}
+                                    Sector: {{ scheme.sector }}
+                                {% else %}
+                                    For All Sectors
+                                {% endif %}
+                            </p>
+                            <p class="card-text">{{ scheme.description[:150] }}{% if scheme.description|length > 150 %}...{% endif %}</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <a href="{{ url_for('main.view_scheme', scheme_id=scheme._id) }}" class="btn btn-sm btn-primary">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info">No schemes available at the moment.</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Latest Jobs Section -->
+<section class="jobs-section py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Latest Job Opportunities</h2>
+            <a href="{{ url_for('main.jobs') }}" class="btn btn-outline-primary">View All</a>
+        </div>
+        <div class="row">
+            {% for job in latest_jobs %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title h5">{{ job.title }}</h3>
+                            <p class="card-text">
+                                {% if job.skills_required and job.skills_required|length > 0 %}
+                                    <span class="badge bg-primary">{{ job.skills_required[0] }}</span>
+                                {% endif %}
+                                <span class="badge bg-secondary">{{ job.location }}</span>
+                                <span class="badge bg-info">{{ job.job_type }}</span>
+                            </p>
+                            <p class="card-text">
+                                {% set employer = get_employer_info_template(job.employer_id) %}
+                                <strong>Company:</strong> {{ employer.company_info.company_name if employer and employer.company_info else 'Company information not available' }}<br>
+                                <strong>Salary:</strong> {{ job.salary_range }}<br>
+                                <strong>Experience:</strong> {{ job.experience_required or 'Not specified' }}
+                            </p>
+                            <p class="card-text">{{ job.description[:100] }}{% if job.description|length > 100 %}...{% endif %}</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <a href="{{ url_for('main.view_job', job_id=job.job_id) }}" class="btn btn-sm btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info">No jobs available at the moment.</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works-section py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">How It Works</h2>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h4><i class="fas fa-user-plus me-2 text-primary"></i> Register</h4>
+                            <p>Create an account as a migrant worker or employer and complete your profile with necessary details.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h4><i class="fas fa-file-upload me-2 text-primary"></i> Document Submission</h4>
+                            <p>Migrants upload supporting documents for verification. Employers provide company details.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h4><i class="fas fa-check-circle me-2 text-primary"></i> Verification</h4>
+                            <p>Admin reviews and verifies submitted documents, generating a unique ID for approved migrants.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h4><i class="fas fa-handshake me-2 text-primary"></i> Connect</h4>
+                            <p>Employers post jobs, migrants view opportunities, and employers add migrant data to their records.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h4><i class="fas fa-headset me-2 text-primary"></i> Support</h4>
+                            <p>Migrants can raise support requests which are addressed by concerned government departments.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Testimonials</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-center mb-3">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <span class="h4 mb-0">RS</span>
+                            </div>
+                        </div>
+                        <p class="card-text text-center">"MigrantConnect TN made it easy for me to register and find a job in Chennai. The support system helped me resolve my housing issues quickly."</p>
+                        <h5 class="card-title text-center mb-0">Rajesh S.</h5>
+                        <p class="text-muted small text-center">Migrant from Bihar</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-center mb-3">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <span class="h4 mb-0">VT</span>
+                            </div>
+                        </div>
+                        <p class="card-text text-center">"As an employer, this platform has made it significantly easier to maintain proper records of our migrant workers and provide them with better support."</p>
+                        <h5 class="card-title text-center mb-0">Vijay T.</h5>
+                        <p class="text-muted small text-center">Construction Company Owner</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-center mb-3">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <span class="h4 mb-0">PD</span>
+                            </div>
+                        </div>
+                        <p class="card-text text-center">"The multilingual support made using the platform very comfortable for me. I could access all information in my native language."</p>
+                        <h5 class="card-title text-center mb-0">Priya D.</h5>
+                        <p class="text-muted small text-center">Migrant from West Bengal</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section py-5 bg-primary text-white text-center">
+    <div class="container">
+        <h2 class="mb-3">Ready to Get Started?</h2>
+        <p class="lead mb-4">Register today to access all features and services of MigrantConnect TN.</p>
+        {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg px-5">Register Now</a>
+        {% else %}
+            {% if current_user.role == 'migrant' %}
+                <a href="{{ url_for('migrants.dashboard') }}" class="btn btn-light btn-lg px-5">Go to Dashboard</a>
+            {% elif current_user.role == 'employer' %}
+                <a href="{{ url_for('employers.dashboard') }}" class="btn btn-light btn-lg px-5">Go to Dashboard</a>
+            {% elif current_user.role == 'admin' %}
+                <a href="{{ url_for('government.admin_dashboard') }}" class="btn btn-light btn-lg px-5">Go to Dashboard</a>
+            {% endif %}
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<style>
+    /* Custom Timeline CSS */
+    .timeline {
+        position: relative;
+        padding: 20px 0;
+    }
+    
+    .timeline:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 2px;
+        height: 100%;
+        background: var(--bs-primary);
+        transform: translateX(-50%);
+    }
+    
+    .timeline-item {
+        position: relative;
+        padding: 20px 0;
+    }
+    
+    .timeline-content {
+        position: relative;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 15px;
+        background: white;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    
+    .timeline-content h4 {
+        margin-top: 0;
+    }
+    
+    @media (max-width: 767px) {
+        .timeline:before {
+            left: 30px;
+        }
+        
+        .timeline-content {
+            margin-left: 60px;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Scholarship | MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Add Scholarship</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('ngos.add_scholarship') }}">
+                        <div class="alert alert-info">
+                            <p><i class="fas fa-info-circle"></i> Scholarships help migrant workers' children access quality education by providing financial support.</p>
+                        </div>
+                        
+                        <h5 class="mb-3">Scholarship Information</h5>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Scholarship Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                            <div class="form-text">E.g., Migrant Children Education Fund, Future Builders Scholarship, etc.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                            <div class="form-text">Provide a detailed description of the scholarship, its purpose, and benefits.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="education_level" class="form-label">Education Level <span class="text-danger">*</span></label>
+                            <select class="form-select" id="education_level" name="education_level" required>
+                                <option value="" selected disabled>Select Education Level</option>
+                                <option value="Primary School">Primary School</option>
+                                <option value="Middle School">Middle School</option>
+                                <option value="High School">High School</option>
+                                <option value="Higher Secondary">Higher Secondary</option>
+                                <option value="Undergraduate">Undergraduate</option>
+                                <option value="Vocational Training">Vocational Training</option>
+                                <option value="Any Level">Any Level</option>
+                            </select>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="amount" class="form-label">Scholarship Amount <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="amount" name="amount" required>
+                                <div class="form-text">Specify the amount (e.g., ₹10,000 per year, ₹1,000 per month)</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="duration" class="form-label">Duration <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="duration" name="duration" required>
+                                <div class="form-text">E.g., One-time, 1 year, Throughout the course, etc.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="eligibility" class="form-label">Eligibility Criteria <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="eligibility" name="eligibility" rows="2" required></textarea>
+                            <div class="form-text">Specify who can apply for this scholarship (e.g., age, income level, academic performance).</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="application_process" class="form-label">Application Process <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="application_process" name="application_process" rows="2" required></textarea>
+                            <div class="form-text">Describe how to apply for the scholarship.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="deadline" class="form-label">Application Deadline</label>
+                            <input type="date" class="form-control" id="deadline" name="deadline">
+                            <div class="form-text">Leave blank if applications are accepted year-round.</div>
+                        </div>
+                        
+                        <h5 class="mb-3 mt-4">Required Documents</h5>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="id_proof" id="id_proof" name="documents_required">
+                                <label class="form-check-label" for="id_proof">ID Proof of Parent/Guardian</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="child_birth_certificate" id="child_birth_certificate" name="documents_required">
+                                <label class="form-check-label" for="child_birth_certificate">Child's Birth Certificate</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="income_certificate" id="income_certificate" name="documents_required">
+                                <label class="form-check-label" for="income_certificate">Income Certificate</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="academic_records" id="academic_records" name="documents_required">
+                                <label class="form-check-label" for="academic_records">Academic Records/Mark Sheets</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="migration_certificate" id="migration_certificate" name="documents_required">
+                                <label class="form-check-label" for="migration_certificate">Migration Certificate/Proof</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="bank_account" id="bank_account" name="documents_required">
+                                <label class="form-check-label" for="bank_account">Bank Account Details</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="other_documents" id="other_documents" name="documents_required">
+                                <label class="form-check-label" for="other_documents">Other Documents</label>
+                            </div>
+                        </div>
+                        
+                        <h5 class="mb-3 mt-4">Contact Information</h5>
+                        <div class="mb-3">
+                            <label for="contact_person" class="form-label">Contact Person <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="contact_person" name="contact_person" required>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="contact_number" class="form-label">Contact Number <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="contact_number" name="contact_number" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contact_email" class="form-label">Contact Email</label>
+                                <input type="email" class="form-control" id="contact_email" name="contact_email">
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('ngos.ngo_dashboard') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Scholarship</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

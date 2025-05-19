@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}NGO Registration | MigrantConnect TN{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">NGO Registration</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('ngos.ngo_register') }}" enctype="multipart/form-data">
+                        <div class="alert alert-info">
+                            <p><i class="fas fa-info-circle"></i> After submitting this form, your NGO registration will be reviewed by our administrators. You'll receive a notification once it's approved.</p>
+                        </div>
+                        
+                        <h5 class="mb-3">Basic Information</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">NGO Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                            <div class="form-text">Briefly describe your NGO, its mission, and the services you provide.</div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="phone" name="phone" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="website" class="form-label">Website</label>
+                                <input type="url" class="form-control" id="website" name="website">
+                            </div>
+                        </div>
+                        
+                        <h5 class="mb-3 mt-4">Address</h5>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="address" name="address" required>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="city" class="form-label">City <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="city" name="city" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="state" class="form-label">State <span class="text-danger">*</span></label>
+                                <select class="form-select" id="state" name="state" required>
+                                    <option value="" selected disabled>Select State</option>
+                                    <option value="Tamil Nadu">Tamil Nadu</option>
+                                    <!-- Other states can be added here -->
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <h5 class="mb-3 mt-4">Services Offered</h5>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="housing" id="housing" name="services_offered">
+                                <label class="form-check-label" for="housing">Housing Support</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="legal_aid" id="legal_aid" name="services_offered">
+                                <label class="form-check-label" for="legal_aid">Legal Aid</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="education" id="education" name="services_offered">
+                                <label class="form-check-label" for="education">Education Support</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="scholarships" id="scholarships" name="services_offered">
+                                <label class="form-check-label" for="scholarships">Scholarships</label>
+                            </div>
+                        </div>
+                        
+                        <h5 class="mb-3 mt-4">Documents</h5>
+                        <div class="mb-3">
+                            <label for="registration_certificate" class="form-label">NGO Registration Certificate <span class="text-danger">*</span></label>
+                            <input type="file" class="form-control" id="registration_certificate" name="registration_certificate" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="tax_exemption" class="form-label">Tax Exemption Certificate (if applicable)</label>
+                            <input type="file" class="form-control" id="tax_exemption" name="tax_exemption">
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="agree" required>
+                            <label class="form-check-label" for="agree">I confirm that all information provided is accurate and complete. I understand that false information may result in rejection of the application.</label>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Submit Registration</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
